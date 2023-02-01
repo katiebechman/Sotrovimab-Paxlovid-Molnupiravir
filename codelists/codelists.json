@@ -1,106 +1,22 @@
 {
   "files": {
-    "opensafely-condition-advanced-decompensated-cirrhosis-of-the-liver.csv": {
-      "id": "opensafely/condition-advanced-decompensated-cirrhosis-of-the-liver/071038cf",
-      "url": "https://codelists.opensafely.org/codelist/opensafely/condition-advanced-decompensated-cirrhosis-of-the-liver/071038cf/",
-      "downloaded_at": "2022-09-14 22:02:48.657412Z",
-      "sha": "cc91d2287dc30a4417140d1d2960dea6eecd61dc"
-    },
-    "opensafely-condition-advanced-decompensated-cirrhosis-of-the-liver-and-associated-conditions-icd-10.csv": {
-      "id": "opensafely/condition-advanced-decompensated-cirrhosis-of-the-liver-and-associated-conditions-icd-10/00e40554",
-      "url": "https://codelists.opensafely.org/codelist/opensafely/condition-advanced-decompensated-cirrhosis-of-the-liver-and-associated-conditions-icd-10/00e40554/",
-      "downloaded_at": "2022-09-14 22:02:48.949971Z",
-      "sha": "d0b25cdc87dd1916e6b9e038456d25e8c28cd811"
-    },
-    "opensafely-procedure-ascitic-drainage.csv": {
-      "id": "opensafely/procedure-ascitic-drainage/39388836",
-      "url": "https://codelists.opensafely.org/codelist/opensafely/procedure-ascitic-drainage/39388836/",
-      "downloaded_at": "2022-09-14 22:02:49.326168Z",
-      "sha": "ca7b31e702e404f0d8aa2e48aa12f244d197e4dc"
-    },
-    "primis-covid19-vacc-uptake-ckd35.csv": {
-      "id": "primis-covid19-vacc-uptake/ckd35/v.1.5.3",
-      "url": "https://codelists.opensafely.org/codelist/primis-covid19-vacc-uptake/ckd35/v.1.5.3/",
-      "downloaded_at": "2022-07-06 14:26:31.629844Z",
-      "sha": "2e2e33d85817844bb8922fc6c87583c898f61ec5"
-    },
-    "opensafely-dialysis.csv": {
-      "id": "opensafely/dialysis/3ce108ac",
-      "url": "https://codelists.opensafely.org/codelist/opensafely/dialysis/3ce108ac/",
-      "downloaded_at": "2022-07-06 14:26:31.997108Z",
-      "sha": "ace47eee209d55a7506e60e7e664f8e75ad9848c"
-    },
-    "opensafely-kidney-transplant.csv": {
-      "id": "opensafely/kidney-transplant/2020-07-15",
-      "url": "https://codelists.opensafely.org/codelist/opensafely/kidney-transplant/2020-07-15/",
-      "downloaded_at": "2022-07-06 14:26:32.241388Z",
-      "sha": "db6b47d17273b563cb428e4a97a7ba8b6d62afa9"
-    },
-    "user-Louis-ckd-stage.csv": {
-      "id": "user/Louis/ckd-stage/77b93e93",
-      "url": "https://codelists.opensafely.org/codelist/user/Louis/ckd-stage/77b93e93/",
-      "downloaded_at": "2022-07-06 14:26:32.554445Z",
-      "sha": "c5be45339cd50ef9fa91186273707e17ded06d0d"
-    },
-    "opensafely-renal-replacement-therapy.csv": {
-      "id": "opensafely/renal-replacement-therapy/2020-04-14",
-      "url": "https://codelists.opensafely.org/codelist/opensafely/renal-replacement-therapy/2020-04-14/",
-      "downloaded_at": "2022-07-06 14:26:32.912480Z",
-      "sha": "08e003f1222fe26781288b2eeff22db99780f202"
-    },
-    "user-viyaasan-kidney-transplant-opcs-4.csv": {
-      "id": "user/viyaasan/kidney-transplant-opcs-4/18d788ae",
-      "url": "https://codelists.opensafely.org/codelist/user/viyaasan/kidney-transplant-opcs-4/18d788ae/",
-      "downloaded_at": "2022-07-06 14:26:33.154158Z",
-      "sha": "fa7f3a5b2e22928038efd8d8795f753a9051625b"
-    },
-    "ukrr-dialysis-opcs-4.csv": {
-      "id": "ukrr/dialysis-opcs-4/505bef04",
-      "url": "https://codelists.opensafely.org/codelist/ukrr/dialysis-opcs-4/505bef04/",
-      "downloaded_at": "2022-07-06 14:26:33.422239Z",
-      "sha": "bf7244d0625246dabfd64334a034e52a8307c42d"
-    },
-    "ukrr-dialysis.csv": {
-      "id": "ukrr/dialysis/66b8a243",
-      "url": "https://codelists.opensafely.org/codelist/ukrr/dialysis/66b8a243/",
-      "downloaded_at": "2022-07-06 14:26:33.675862Z",
-      "sha": "62e982c9884edff2a16c2c9f3963f773d2c3dd95"
-    },
-    "opensafely-solid-organ-transplantation-snomed.csv": {
-      "id": "opensafely/solid-organ-transplantation-snomed/2020-04-10",
-      "url": "https://codelists.opensafely.org/codelist/opensafely/solid-organ-transplantation-snomed/2020-04-10/",
-      "downloaded_at": "2022-07-06 14:26:33.963183Z",
-      "sha": "cdb61aa51b4400c1aba2f8e4728c1b8130c4fd40"
-    },
-    "user-bangzheng-creatinine-value-shortlist.csv": {
-      "id": "user/bangzheng/creatinine-value-shortlist/60eb1411",
-      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/creatinine-value-shortlist/60eb1411/",
-      "downloaded_at": "2022-07-06 14:26:34.238497Z",
-      "sha": "224052741a393be65aaec9340fa20e9785871ff7"
-    },
-    "user-bangzheng-creatinine-value.csv": {
-      "id": "user/bangzheng/creatinine-value/58285b97",
-      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/creatinine-value/58285b97/",
-      "downloaded_at": "2022-07-01 10:54:45.807618Z",
-      "sha": "8b086a28dbf3af1fee7c44352533f9f99383909a"
-    },
-    "user-bangzheng-egfr-value-shortlist.csv": {
-      "id": "user/bangzheng/egfr-value-shortlist/1d0e46c5",
-      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/egfr-value-shortlist/1d0e46c5/",
-      "downloaded_at": "2022-07-08 14:37:57.705932Z",
-      "sha": "3c78d2bc81b5c9bbb913966999ef86f37f1eafa1"
-    },
-    "user-ss808-estimated-glomerular-filtration-rate-egfr-values.csv": {
-      "id": "user/ss808/estimated-glomerular-filtration-rate-egfr-values/5d974480",
-      "url": "https://codelists.opensafely.org/codelist/user/ss808/estimated-glomerular-filtration-rate-egfr-values/5d974480/",
-      "downloaded_at": "2022-07-06 14:26:35.365671Z",
-      "sha": "8c153aae62a3c7cf196cfe066f1e63123ce4ce99"
-    },
     "user-MillieGreen-covid-19-symptoms.csv": {
       "id": "user/MillieGreen/covid-19-symptoms/0ca4c5ac",
       "url": "https://codelists.opensafely.org/codelist/user/MillieGreen/covid-19-symptoms/0ca4c5ac/",
       "downloaded_at": "2022-07-01 08:20:25.704268Z",
       "sha": "bc21046f8f59de701e27a07f47e6a7e4397d23c2"
+    },
+    "user-viyaasan-critical-care.csv": {
+      "id": "user/viyaasan/critical-care/4ae39d1e",
+      "url": "https://codelists.opensafely.org/codelist/user/viyaasan/critical-care/4ae39d1e/",
+      "downloaded_at": "2023-01-16 12:48:22.533210Z",
+      "sha": "af0fa4703d3847d05142a6551ae4ca5a2ad9805e"
+    },
+    "user-viyaasan-mechanical-ventilation.csv": {
+      "id": "user/viyaasan/mechanical-ventilation/4830dd28",
+      "url": "https://codelists.opensafely.org/codelist/user/viyaasan/mechanical-ventilation/4830dd28/",
+      "downloaded_at": "2023-01-16 12:48:22.755033Z",
+      "sha": "bc83eff6e3b304ef99f5696bc52c4191809fff0a"
     },
     "opensafely-covid-identification.csv": {
       "id": "opensafely/covid-identification/2020-06-03",
@@ -252,6 +168,12 @@
       "downloaded_at": "2022-07-01 08:20:38.947721Z",
       "sha": "3cc58660e33777bd2cd4e9d43b4ff3843ee9ead2"
     },
+    "user-bangzheng-nhsd-immunosupression-pcdcluster-snomed-ct-new.csv": {
+      "id": "user/bangzheng/nhsd-immunosupression-pcdcluster-snomed-ct-new/7c9a7542",
+      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/nhsd-immunosupression-pcdcluster-snomed-ct-new/7c9a7542/",
+      "downloaded_at": "2022-09-14 22:03:17.060869Z",
+      "sha": "09287f14fed4848e8fb7e706e859ebc1f316be74"
+    },
     "nhsd-hiv-aids-snomed.csv": {
       "id": "nhsd/hiv-aids-snomed/68ca529e",
       "url": "https://codelists.opensafely.org/codelist/nhsd/hiv-aids-snomed/68ca529e/",
@@ -264,11 +186,71 @@
       "downloaded_at": "2022-07-01 08:20:39.775488Z",
       "sha": "c89c973bdb73b5c23c541905e3c71bd7dfe72930"
     },
+    "user-josephignace-connective-tissue-disorders-systematic-lupus-erythematosus.csv": {
+      "id": "user/josephignace/connective-tissue-disorders-systematic-lupus-erythematosus/3aa04b60",
+      "url": "https://codelists.opensafely.org/codelist/user/josephignace/connective-tissue-disorders-systematic-lupus-erythematosus/3aa04b60/",
+      "downloaded_at": "2023-01-16 12:49:44.111502Z",
+      "sha": "583c3a6be37cf840a908bd994667d1abcaec689c"
+    },
+    "opensafely-systemic-lupus-erythematosus-sle.csv": {
+      "id": "opensafely/systemic-lupus-erythematosus-sle/2020-05-12",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/systemic-lupus-erythematosus-sle/2020-05-12/",
+      "downloaded_at": "2023-01-16 12:49:45.414535Z",
+      "sha": "a7354e610e9ccc2f22f8e8b9b1a7c329a971aa7c"
+    },
+    "user-josephignace-inflammatory-arthritis-rheumatoid-arthritis-icd10.csv": {
+      "id": "user/josephignace/inflammatory-arthritis-rheumatoid-arthritis-icd10/07bab167",
+      "url": "https://codelists.opensafely.org/codelist/user/josephignace/inflammatory-arthritis-rheumatoid-arthritis-icd10/07bab167/",
+      "downloaded_at": "2023-01-16 12:49:44.626804Z",
+      "sha": "a3f83cbba7dda7e029304b441559db2374b0d269"
+    },
+    "user-markdrussell-new-rheumatoid-arthritis.csv": {
+      "id": "user/markdrussell/new-rheumatoid-arthritis/68f9eaf6",
+      "url": "https://codelists.opensafely.org/codelist/user/markdrussell/new-rheumatoid-arthritis/68f9eaf6/",
+      "downloaded_at": "2023-01-16 10:33:51.338546Z",
+      "sha": "37439970e54dd5729e186ffbe6a3c78385403128"
+    },
+    "opensafely-psoriasis.csv": {
+      "id": "opensafely/psoriasis/01091de1",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/psoriasis/01091de1/",
+      "downloaded_at": "2023-01-26 16:15:42.439788Z",
+      "sha": "9bcaf40cef8b3624037e8b4ed318cefa62f8cc8c"
+    },
+    "opensafely-psoriatic-arthritis.csv": {
+      "id": "opensafely/psoriatic-arthritis/2020-10-21",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/psoriatic-arthritis/2020-10-21/",
+      "downloaded_at": "2023-01-26 16:22:38.054914Z",
+      "sha": "c4188c7e914b59f058ad61bd39e005ee976e1ee5"
+    },
+    "opensafely-ankylosing-spondylitis.csv": {
+      "id": "opensafely/ankylosing-spondylitis/701b538a",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/ankylosing-spondylitis/701b538a/",
+      "downloaded_at": "2023-01-26 16:22:38.235787Z",
+      "sha": "77600c35db8fd1747a41f6dfa5f9e1d0d90dce2f"
+    },
+    "opensafely-inflammatory-bowel-disease.csv": {
+      "id": "opensafely/inflammatory-bowel-disease/2020-04-07",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/inflammatory-bowel-disease/2020-04-07/",
+      "downloaded_at": "2023-01-26 16:15:42.021085Z",
+      "sha": "cd2175107ab3e81151fc31cd8ffd754ce5902f8b"
+    },
+    "opensafely-inflammatory-bowel-disease-snomed.csv": {
+      "id": "opensafely/inflammatory-bowel-disease-snomed/2020-04-07",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/inflammatory-bowel-disease-snomed/2020-04-07/",
+      "downloaded_at": "2023-01-26 16:15:42.189268Z",
+      "sha": "b26d718c8b0ae40c4de452e18597f1e6531335ef"
+    },
     "nhsd-transplant-spl-atriskv4-snomed-ct.csv": {
       "id": "nhsd/transplant-spl-atriskv4-snomed-ct/57747a02",
       "url": "https://codelists.opensafely.org/codelist/nhsd/transplant-spl-atriskv4-snomed-ct/57747a02/",
       "downloaded_at": "2022-07-01 08:20:40.264140Z",
       "sha": "512bf4922c32d3826e17eeb0870e465825ec2e21"
+    },
+    "user-bangzheng-nhsd-transplant-spl-atriskv4-snomed-ct-new.csv": {
+      "id": "user/bangzheng/nhsd-transplant-spl-atriskv4-snomed-ct-new/15a9e878",
+      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/nhsd-transplant-spl-atriskv4-snomed-ct-new/15a9e878/",
+      "downloaded_at": "2022-09-14 22:03:17.425923Z",
+      "sha": "56a9f8c2b600286b5403ad532097a82fcbdccd7d"
     },
     "nhsd-transplant-spl-hes-opcs4.csv": {
       "id": "nhsd/transplant-spl-hes-opcs4/1b47de52",
@@ -474,23 +456,41 @@
       "downloaded_at": "2022-07-01 08:20:57.891274Z",
       "sha": "5d5471bb6a8a01e362b191b3eb8e80c2febeb1da"
     },
-    "user-bangzheng-nhsd-immunosupression-pcdcluster-snomed-ct-new.csv": {
-      "id": "user/bangzheng/nhsd-immunosupression-pcdcluster-snomed-ct-new/7c9a7542",
-      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/nhsd-immunosupression-pcdcluster-snomed-ct-new/7c9a7542/",
-      "downloaded_at": "2022-09-14 22:03:17.060869Z",
-      "sha": "09287f14fed4848e8fb7e706e859ebc1f316be74"
+    "user-katiebechman-diverticulitis.csv": {
+      "id": "user/katiebechman/diverticulitis/4927290f",
+      "url": "https://codelists.opensafely.org/codelist/user/katiebechman/diverticulitis/4927290f/",
+      "downloaded_at": "2023-01-16 10:33:51.578680Z",
+      "sha": "5806ea5b60d32c88684f263fcb922e4b28188475"
     },
-    "user-bangzheng-nhsd-transplant-spl-atriskv4-snomed-ct-new.csv": {
-      "id": "user/bangzheng/nhsd-transplant-spl-atriskv4-snomed-ct-new/15a9e878",
-      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/nhsd-transplant-spl-atriskv4-snomed-ct-new/15a9e878/",
-      "downloaded_at": "2022-09-14 22:03:17.425923Z",
-      "sha": "56a9f8c2b600286b5403ad532097a82fcbdccd7d"
+    "user-katiebechman-diverticulitis_icd10.csv": {
+      "id": "user/katiebechman/diverticulitis_icd10/32ca75d0",
+      "url": "https://codelists.opensafely.org/codelist/user/katiebechman/diverticulitis_icd10/32ca75d0/",
+      "downloaded_at": "2023-01-16 12:10:57.566593Z",
+      "sha": "69e1f7351e23fb93a37964d74a5115293cb3dc9d"
     },
-    "user-bangzheng-cancer-excluding-lung-and-haematological-snomed-new.csv": {
-      "id": "user/bangzheng/cancer-excluding-lung-and-haematological-snomed-new/31cac0ec",
-      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/cancer-excluding-lung-and-haematological-snomed-new/31cac0ec/",
-      "downloaded_at": "2022-09-14 22:03:18.576210Z",
-      "sha": "cac87b571ed24373102d103bbf03d593966bd8bd"
+    "opensafely-methotrexate-injectable.csv": {
+      "id": "opensafely/methotrexate-injectable/3328044b",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/methotrexate-injectable/3328044b/",
+      "downloaded_at": "2023-01-30 11:59:51.156890Z",
+      "sha": "b3346c5e6169072eb26bb62094ee883dcd8325d4"
+    },
+    "opensafely-methotrexate-oral.csv": {
+      "id": "opensafely/methotrexate-oral/041a8320",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/methotrexate-oral/041a8320/",
+      "downloaded_at": "2023-01-30 11:59:51.345211Z",
+      "sha": "68754de9916bb08a1ea9d6d84c899dda5ee64ad7"
+    },
+    "opensafely-mycophenolate.csv": {
+      "id": "opensafely/mycophenolate/30754455",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/mycophenolate/30754455/",
+      "downloaded_at": "2023-01-30 11:59:51.542989Z",
+      "sha": "1d86687fd7f4dc21351f2e8af88035460a1b1a06"
+    },
+    "opensafely-ciclosporin-oral-dmd.csv": {
+      "id": "opensafely/ciclosporin-oral-dmd/4c961cc9",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/ciclosporin-oral-dmd/4c961cc9/",
+      "downloaded_at": "2023-01-30 11:59:51.746495Z",
+      "sha": "e5c310a46991fd4aae1ac7b4a2272d87c4f68439"
     }
   }
 }
