@@ -143,66 +143,112 @@ liver_disease_nhsd_icd10_codes = codelist_from_csv(
 rheumatoid_arthritis_icd10 = codelist_from_csv(
   "codelists/user-josephignace-inflammatory-arthritis-rheumatoid-arthritis-icd10.csv",  system = "icd10",  column = "code",
 )
-
 rheumatoid_arthritis_snowmed = codelist_from_csv(
   "codelists/user-markdrussell-new-rheumatoid-arthritis.csv",  system = "snomed",  column = "code",
 )
-
 SLE_icd10 = codelist_from_csv(
   "codelists/user-josephignace-connective-tissue-disorders-systematic-lupus-erythematosus.csv",  system = "icd10",  column = "code",
 )
-
 SLE_ctv = codelist_from_csv(
   "codelists/opensafely-systemic-lupus-erythematosus-sle.csv",  system = "ctv3",  column = "CTV3ID",
 )
-
 Psoriasis_ctv3 = codelist_from_csv(
   "codelists/opensafely-psoriasis.csv",  system = "ctv3",  column = "code",
 )
-
 Psoriatic_arthritis_snomed = codelist_from_csv(
   "codelists/opensafely-psoriatic-arthritis.csv",  system = "snomed",  column = "id",
 )
-
 Ankylosing_Spondylitis_ctv3 = codelist_from_csv(
   "codelists/opensafely-ankylosing-spondylitis.csv",  system = "ctv3",  column = "code",
 )
-
 IBD_ctv3 = codelist_from_csv(
   "codelists/opensafely-inflammatory-bowel-disease.csv",  system = "ctv3",  column = "CTV3ID",
 )
-
 immunosuppresant_drugs_dmd_codes = codelist_from_csv(
   "codelists/nhsd-immunosuppresant-drugs-pra-dmd.csv",   system = "snomed",   column = "code"
 )
-
 immunosuppresant_drugs_snomed_codes = codelist_from_csv(
   "codelists/nhsd-immunosuppresant-drugs-pra-snomed.csv",   system = "snomed",   column = "code"
 )
-
 oral_steroid_drugs_dmd_codes = codelist_from_csv(
   "codelists/nhsd-oral-steroid-drugs-pra-dmd.csv",  system = "snomed",  column = "dmd_id",
 )
-
 oral_steroid_drugs_snomed_codes = codelist_from_csv(
   "codelists/nhsd-oral-steroid-drugs-snomed.csv",   system = "snomed",   column = "code"
 )
-
 inj_methotrexate_drugs_snomed_codes = codelist_from_csv(
   "codelists/opensafely-methotrexate-injectable.csv",   system = "snomed",   column = "dmd_id"
 )
-
 oral_methotrexate_drugs_snomed_codes = codelist_from_csv(
   "codelists/opensafely-methotrexate-oral.csv",   system = "snomed",   column = "dmd_id"
 )
-
 oral_mycophenolate_drugs_snomed_codes = codelist_from_csv(
   "codelists/opensafely-mycophenolate.csv",   system = "snomed",   column = "dmd_id"
 )
-
 oral_ciclosporin_snomed_codes = codelist_from_csv(
   "codelists/opensafely-ciclosporin-oral-dmd.csv",   system = "snomed",   column = "dmd_id"
 )
+abatacept_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-abatacept.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+adalimumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-adalimumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+alemtuzumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-alemtuzumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+baricitinib_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-baricitinib.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+brodalumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-brodalumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+certolizumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-certolizumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+etanercept_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-etanercept.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+golimumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-golimumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+guselkumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-guselkumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+infliximab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-infliximab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+mepolizumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-mepolizumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+risankizumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-risankizumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+sarilumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-sarilumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+secukinumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-secukinumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+tildrakizumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-tildrakizumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+tocilizumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-tocilizumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+tofacitinib_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-tofacitinib.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+upadacitinib_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-upadacitinib.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+ustekinumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-ustekinumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+vedolizumab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-vedolizumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
+
 
 ### Primary immune deficiencies
 immunosupression_nhsd_codes = codelist_from_csv(
