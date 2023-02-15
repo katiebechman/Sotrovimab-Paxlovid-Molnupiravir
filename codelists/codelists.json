@@ -629,6 +629,24 @@
       "url": "https://codelists.opensafely.org/codelist/opensafely/high-cost-drugs-vedolizumab/7f1d1179/",
       "downloaded_at": "2023-02-02 11:30:04.545027Z",
       "sha": "08fe472d416b3be25a5867d82a0760a388586cc0"
+    },
+    "opensafely-symptoms-diarrhoea.csv": {
+      "id": "opensafely/symptoms-diarrhoea/7b4f7876",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/symptoms-diarrhoea/7b4f7876/",
+      "downloaded_at": "2023-02-08 17:13:58.016423Z",
+      "sha": "803ea81e531b1404afbf85aaae3245321acf3d22"
+    },
+    "user-katiebechman-abnormal-taste.csv": {
+      "id": "user/katiebechman/abnormal-taste/0cfa8d5f",
+      "url": "https://codelists.opensafely.org/codelist/user/katiebechman/abnormal-taste/0cfa8d5f/",
+      "downloaded_at": "2023-02-09 09:51:09.917521Z",
+      "sha": "3b6a5a63cafb3b20913eadbfb7d298e1fa502a41"
+    },
+    "user-katiebechman-abnormal-taste-icd10.csv": {
+      "id": "user/katiebechman/abnormal-taste-icd10/73eb1a29",
+      "url": "https://codelists.opensafely.org/codelist/user/katiebechman/abnormal-taste-icd10/73eb1a29/",
+      "downloaded_at": "2023-02-09 09:51:10.125446Z",
+      "sha": "0bd7122422b1ab7ea734930a32e24ca370d91a01"
     }
   }
 }

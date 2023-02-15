@@ -43,7 +43,7 @@ covid_symptoms_snomed_codes = codelist_from_csv(
 
 ### Require hospitalisation for COVID-19
 covid_icd10_codes = codelist_from_csv(
-  "codelists/opensafely-covid-identification.csv",  system = "icd10",  column = "icd10_code",
+  "codelists/opensafely-covid-identification.csv",  system = "icd10",  column = "icd10_code"
 )
 
 ### Pregnancy
@@ -421,12 +421,24 @@ covid_vaccine_declined_codes = combine_codelists(
 ## Outcomes  ---- Pre-specified adverse drug reactions and AESIs
 
 ### Pre-specified adverse drug reactions
-diverticulitis_snowmed = codelist_from_csv(
+diverticulitis_snomed_codes = codelist_from_csv(
   "codelists/user-katiebechman-diverticulitis.csv",  system = "snomed",  column = "code",
 )
 
-diverticulitis_icd = codelist_from_csv(
+diverticulitis_icd_codes = codelist_from_csv(
   "codelists/user-katiebechman-diverticulitis_icd10.csv",  system = "icd10",  column = "code",
+)
+
+diarrhoea_snomed_codes = codelist_from_csv(
+  "codelists/opensafely-symptoms-diarrhoea.csv",  system = "snomed",  column = "code",
+)
+
+taste_snomed_codes = codelist_from_csv(
+  "codelists/user-katiebechman-abnormal-taste.csv",  system = "snomed",  column = "code",
+)
+
+taste_icd_codes = codelist_from_csv( 
+  "codelists/user-katiebechman-abnormal-taste-icd10.csv", system = "icd10",  column = "code",
 )
 
 ### AESIs

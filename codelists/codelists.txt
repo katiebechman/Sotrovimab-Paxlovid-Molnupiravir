@@ -103,3 +103,6 @@ opensafely/high-cost-drugs-tofacitinib/4a4b6b19
 opensafely/high-cost-drugs-upadacitinib/313bf7e4
 opensafely/high-cost-drugs-ustekinumab/182c84af
 opensafely/high-cost-drugs-vedolizumab/7f1d1179
+opensafely/symptoms-diarrhoea/7b4f7876
+user/katiebechman/abnormal-taste/0cfa8d5f/
+user/katiebechman/abnormal-taste-icd10/73eb1a29/

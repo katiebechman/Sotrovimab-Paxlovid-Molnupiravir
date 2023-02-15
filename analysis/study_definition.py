@@ -135,7 +135,7 @@ def covid_therapeutics(dx_codelist):
       between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
       find_last_match_in_period=True,
       returning="date",
-      date_format="YYYY-MM",
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.2,
           "date": {"earliest": "2021-12-16"},
@@ -144,12 +144,12 @@ def covid_therapeutics(dx_codelist):
 def covid_therapeutics_approved(dx_codelist):
   return patients.with_covid_therapeutics(
       dx_codelist,
-      with_these_statuses = "Approved",
+      with_these_statuses = ["Approved"],
       with_these_indications = "non_hospitalised",
       between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
       find_last_match_in_period=True,
       returning="date",
-      date_format="YYYY-MM",
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.2,
           "date": {"earliest": "2021-12-16"},
@@ -158,12 +158,12 @@ def covid_therapeutics_approved(dx_codelist):
 def covid_therapeutics_complete(dx_codelist):
   return patients.with_covid_therapeutics(
       dx_codelist,
-      with_these_statuses = "Treatment Complete", 
+      with_these_statuses = ["Treatment Complete"], 
       with_these_indications = "non_hospitalised",
       between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
       find_last_match_in_period=True,
       returning="date",
-      date_format="YYYY-MM",
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.2,
           "date": {"earliest": "2021-12-16"},
@@ -173,11 +173,11 @@ def covid_therapeutics_could_not_start(dx_codelist):
   return patients.with_covid_therapeutics(
       dx_codelist,
       with_these_indications = "non_hospitalised",
-      with_these_statuses = "Treatment Not Started",
+      with_these_statuses = ["Treatment Not Started"],
       between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
       find_last_match_in_period=True,
       returning="date",
-      date_format="YYYY-MM",
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.2,
           "date": {"earliest": "2021-12-16"},
@@ -187,11 +187,59 @@ def covid_therapeutics_stopped(dx_codelist):
   return patients.with_covid_therapeutics(
       dx_codelist,
       with_these_indications = "non_hospitalised",
-      with_these_statuses = "Treatment Stopped",
+      with_these_statuses = ["Treatment Stopped"],
       between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
       find_last_match_in_period=True,
       returning="date",
-      date_format="YYYY-MM",
+      date_format="YYYY-MM-DD",
+      return_expectations={
+          "incidence": 0.2,
+          "date": {"earliest": "2021-12-16"},
+      },
+  )
+def adverse_outcome_icd(dx_codelist):
+  return patients.admitted_to_hospital(
+      with_these_diagnoses = dx_codelist,
+      returning="date_admitted",
+      between = ["covid_test_positive_date", "covid_test_positive_date + 28 days"],
+      find_first_match_in_period=True,
+      date_format="YYYY-MM-DD",
+      return_expectations={
+          "incidence": 0.2,
+          "date": {"earliest": "2021-12-16"},
+      },
+  )
+def adverse_outcome_snomed(dx_codelist):
+  return patients.with_these_clinical_events(
+      dx_codelist,
+      returning="date",
+      between = ["covid_test_positive_date", "covid_test_positive_date + 28 days"],
+      find_first_match_in_period=True,
+      date_format="YYYY-MM-DD",
+      return_expectations={
+          "incidence": 0.2,
+          "date": {"earliest": "2021-12-16"},
+      },
+  )
+def imae_snomed(dx_codelist):  ## to idenitfy NEW conditions, will include all first diagnosis but then on stata remove those diagnosed before covid test positive date
+  return patients.with_these_clinical_events(
+      dx_codelist,
+      returning="date",
+      on_or_before ="covid_test_positive_date + 28 days",
+      find_first_match_in_period=True,
+      date_format="YYYY-MM-DD",
+      return_expectations={
+          "incidence": 0.2,
+          "date": {"earliest": "2021-12-16"},
+      },
+  )
+def imae_icd(dx_codelist):  ## to idenitfy NEW conditions, will include all first diagnosis but then on stata remove those diagnosed before covid test positive date
+  return patients.admitted_to_hospital(
+      with_these_diagnoses = dx_codelist,
+      returning="date_admitted",
+      on_or_before ="covid_test_positive_date + 28 days",
+      find_first_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.2,
           "date": {"earliest": "2021-12-16"},
@@ -217,14 +265,7 @@ study = StudyDefinition(
     """,
   ),
         
-  ## NOT died 
-  has_died = patients.died_from_any_cause(
-    on_or_before = "index_date - 1 day",
-    returning = "binary_flag",
-  ),
-
   ## COVID TEST POSITIVE
-
   ## First positive SARS-CoV-2 test. [patients are eligible for treatment if diagnosed <=5d ago. Restricted to first positive covid test after index date]
   covid_test_positive = patients.with_test_result_in_sgss(
     pathogen = "SARS-CoV-2", test_result = "positive", returning = "binary_flag", on_or_after = "index_date - 5 days", find_first_match_in_period = True, 
@@ -255,6 +296,18 @@ study = StudyDefinition(
   ),
   covid_symptoms_snomed = patients.with_these_clinical_events(
     covid_symptoms_snomed_codes, returning = "date", date_format = "YYYY-MM-DD", find_first_match_in_period = True, on_or_after = "index_date - 5 days",
+  ),
+  prior_covid = patients.with_test_result_in_sgss(
+    pathogen = "SARS-CoV-2", test_result = "positive", returning = "binary_flag", on_or_before = "covid_test_positive_date - 1 day", find_last_match_in_period = True, 
+    restrict_to_earliest_specimen_date = True,  return_expectations = {"incidence": 0.9 },
+  ),
+  prior_covid_date = patients.with_test_result_in_sgss(
+    pathogen = "SARS-CoV-2", test_result = "positive", returning = "date", date_format = "YYYY-MM-DD", on_or_before = "covid_test_positive_date - 1 day", find_last_match_in_period = True, 
+    restrict_to_earliest_specimen_date = True, return_expectations = {"date": {"earliest": "2021-12-11", "latest": "today"}, "incidence": 0.9},
+  ),
+  prior_covid_test_type = patients.with_test_result_in_sgss(
+    pathogen = "SARS-CoV-2", test_result = "positive", returning = "case_category", on_or_before = "covid_test_positive_date - 1 day", find_last_match_in_period = True, 
+    restrict_to_earliest_specimen_date = True, return_expectations = {"category": {"ratios": {"LFT_Only": 0.4, "PCR_Only": 0.4, "LFT_WithPCR": 0.2}},"incidence": 0.2, },
   ),
   ## SGTF indicator and Variant
   sgtf=patients.with_test_result_in_sgss(
@@ -445,39 +498,6 @@ study = StudyDefinition(
     "sotrovimab_covid_therapeutics","paxlovid_covid_therapeutics", "molnupiravir_covid_therapeutics",
   ),
 
-  ### Exclusion 
-  # Require hospitalisation for COVID-19 (note this data lags behind the therapeutics/testing data so may be missing)
-  # HELP - how to exclude admitted for covid covid_test_positive_date & covid_test_positive_date + 5 days  
-  primary_covid_hospital_discharge_date = patients.admitted_to_hospital(
-    returning = "date_discharged",
-    with_these_primary_diagnoses = covid_icd10_codes,
-    with_patient_classification = ["1"], # ordinary admissions only - exclude day cases and regular attenders
-    between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    date_format = "YYYY-MM-DD",
-    find_first_match_in_period = False,
-    return_expectations = {
-      "date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"},
-      "rate": "uniform",
-      "incidence": 0.05
-    },
-  ),
-  
-  any_covid_hospital_discharge_date = patients.admitted_to_hospital(
-    returning = "date_discharged",
-    with_these_diagnoses = covid_icd10_codes,
-    with_patient_classification = ["1"], # ordinary admissions only - exclude day cases and regular attenders
-    # see https://docs.opensafely.org/study-def-variables/#sus for more info
-    with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], # emergency admissions only to exclude incidental COVID
-    between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    date_format = "YYYY-MM-DD",
-    find_first_match_in_period = False,
-    return_expectations = {
-      "date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"},
-      "rate": "uniform",
-      "incidence": 0.05
-    },
-  ),
-
   # DEMOGRAPHIC COVARIATES & COMORBIDITY
   age = patients.age_as_of(
     "covid_test_positive_date",
@@ -554,15 +574,8 @@ study = StudyDefinition(
       "rate": "universal",
       "category": {
         "ratios": {
-          "North East": 0.1,
-          "North West": 0.1,
-          "Yorkshire and The Humber": 0.1,
-          "East Midlands": 0.1,
-          "West Midlands": 0.1,
-          "East": 0.1,
-          "London": 0.2,
-          "South West": 0.1,
-          "South East": 0.1,},},
+          "North East": 0.1, "North West": 0.1,"Yorkshire and The Humber": 0.1, "East Midlands": 0.1,"West Midlands": 0.1, "East": 0.1, "London": 0.2, "South West": 0.1, "South East": 0.1,},
+      },
     },
   ),
 
@@ -579,7 +592,6 @@ study = StudyDefinition(
     },
   ),
 
-  ## Vaccination status
   vaccination_status = patients.categorised_as(
     { "Un-vaccinated": "DEFAULT",
       "Un-vaccinated (declined)": """ covid_vax_declined AND NOT (covid_vax_1 OR covid_vax_2 OR covid_vax_3)""",
@@ -638,7 +650,6 @@ study = StudyDefinition(
       }
   ),
 
-  # CLINICAL CO-MORBIDITIES  ----
   bmi=patients.most_recent_bmi(
       on_or_before="covid_test_positive_date",
       minimum_age_at_measurement=18,
@@ -655,4 +666,137 @@ study = StudyDefinition(
   chronic_cardiac_disease=comorbidity_snomed(chronic_cardiac_dis_codes),
   hypertension=comorbidity_snomed(hypertension_codes),
   chronic_respiratory_disease=comorbidity_snomed(chronic_respiratory_dis_codes),
+
+
+  ### EXCLUSIONS 
+  ## Died
+  has_died = patients.died_from_any_cause(
+    on_or_before = "covid_test_positive_date - 1 day",
+    returning = "binary_flag",
+  ),
+  death_date = patients.died_from_any_cause(
+    returning = "date_of_death",
+    date_format = "YYYY-MM-DD",
+    on_or_after = "covid_test_positive_date - 1 day",
+    return_expectations = {
+      "date": {"earliest": "2021-12-20", "latest": "index_date"},
+      "incidence": 0.1
+    },
+  ),  
+  
+  ## De-registration
+  dereg_date = patients.date_deregistered_from_all_supported_practices(
+    on_or_after = "covid_test_positive_date",
+    date_format = "YYYY-MM-DD",
+    return_expectations = {
+      "date": {"earliest": "2021-12-20", "latest": "index_date"},
+      "incidence": 0.1
+    },
+  ), 
+  
+  ## Hospitalised with covid between positive test and 5 days
+  primary_covid_hospital_discharge_date = patients.admitted_to_hospital(
+    returning = "date_discharged",
+    with_these_primary_diagnoses = covid_icd10_codes,
+    with_patient_classification = ["1"], 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+    date_format = "YYYY-MM-DD",
+    find_first_match_in_period = False,
+    return_expectations = {
+      "date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"},
+      "rate": "uniform",
+      "incidence": 0.05
+    },
+  ),
+  any_covid_hospital_discharge_date = patients.admitted_to_hospital(
+    returning = "date_discharged",
+    with_these_diagnoses = covid_icd10_codes,
+    with_patient_classification = ["1"], 
+    with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+    date_format = "YYYY-MM-DD",
+    find_first_match_in_period = False,
+    return_expectations = {
+      "date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"},
+      "rate": "uniform",
+      "incidence": 0.05
+    },
+  ),
+  
+  #  pregnancy record in last 36 weeks.  pregnancy OR delivery code since latest pregnancy record:
+  preg_36wks_date = patients.with_these_clinical_events(
+    pregnancy_primis_codes,
+    returning = "date",
+    find_last_match_in_period = True,
+    between = ["covid_test_positive_date - 252 days", "covid_test_positive_date - 1 day"],
+    date_format = "YYYY-MM-DD",
+  ),
+  pregdel = patients.with_these_clinical_events(
+    pregdel_primis_codes,
+    returning = "binary_flag", find_last_match_in_period = True, between = ["preg_36wks_date + 1 day", "covid_test_positive_date - 1 day"], date_format = "YYYY-MM-DD",
+  ),
+  pregnancy = patients.satisfying(
+    """
+    gender = 'F' AND preg_age <= 50
+    AND (preg_36wks_date AND NOT pregdel)
+    """,
+    
+    gender = patients.sex(return_expectations = {"rate": "universal", "category": {"ratios": {"M": 0.49, "F": 0.51}},}
+    ),
+    preg_age = patients.age_as_of("preg_36wks_date", return_expectations = {"rate": "universal","int": {"distribution": "population_ages"}, "incidence" : 0.9 },
+    ),
+  ),
+
+  ## OUTCOME 
+  ## Time to outcome - coded in stata [28 days after +covid or 28day after Tx]
+  ## 1) DRUG REACTIONS AND AESI (diarrhoea, diverticulitis, altered taste)
+  ae_diverticulitis_icd=adverse_outcome_icd(diverticulitis_icd_codes),
+  ae_diverticulitis_snomed=adverse_outcome_snomed(diverticulitis_snomed_codes),
+  ae_diarrhoea_snomed=adverse_outcome_snomed(diarrhoea_snomed_codes), 
+  ae_taste_snomed=adverse_outcome_snomed(taste_snomed_codes),
+  ae_taste_icd=adverse_outcome_icd(taste_icd_codes),
+  ae_rheumatoid_arthritis_snomed=imae_snomed(rheumatoid_arthritis_snowmed),
+  ae_rheumatoid_arthritis_icd=imae_icd(rheumatoid_arthritis_icd10),
+  ae_SLE_ctv=imae_snomed(SLE_ctv),
+  ae_SLE_icd=imae_icd(SLE_icd10), 
+  ae_Psoriasis_snomed=imae_snomed(Psoriasis_ctv3),
+  ae_Psoriatic_arthritis_snomed=imae_snomed(Psoriatic_arthritis_snomed),
+  ae_Ankylosing_Spondylitis_ctv=imae_snomed(Ankylosing_Spondylitis_ctv3),  
+  ae_IBD_snomed=imae_snomed(IBD_ctv3),
+
+  ## 2) ALL SAE INCLUDING COVID [Note need to consider patients admitted for MAB infusion]
+  all_hosp_date = patients.admitted_to_hospital(
+    returning = "date_admitted", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
+  ), 
+  ## all_hosp_cause = patients.admitted_to_hospital(returning = "primary_diagnosis", with_patient_classification = ["1"], between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, return_expectations=list, ), 
+
+  covid_hosp_date = patients.admitted_to_hospital(
+    returning = "date_admitted", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ),  
+  emerg_covid_hosp_date = patients.admitted_to_hospital(
+    returning = "date_admitted", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ),  
+  covid_hosp_date_mabs_procedure = patients.admitted_to_hospital(
+    returning = "date_admitted", with_patient_classification = ["1"], with_these_procedures=mabs_procedure_codes, 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
+  ),
+  died_date_ons=patients.died_from_any_cause(
+    returning="date_of_death", 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2021-01-01", "latest" : "today"}, "rate": "uniform","incidence": 0.6},
+  ),  
+  # # death_code = patients.died_from_any_cause(returning = "underlying_cause_of_death", between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"]),
+
+  died_ons_covid=patients.with_these_codes_on_death_certificate(
+    covid_icd10_codes, returning="date_of_death",       
+    between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], date_format = "YYYY-MM-DD",  match_only_underlying_cause=True,
+    return_expectations = {"date": {"earliest": "2021-01-01", "latest" : "today"}, "rate": "uniform", "incidence": 0.6},
+  ),
 )
