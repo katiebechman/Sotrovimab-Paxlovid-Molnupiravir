@@ -500,22 +500,14 @@ study = StudyDefinition(
 
   # DEMOGRAPHIC COVARIATES & COMORBIDITY
   age = patients.age_as_of(
-    "covid_test_positive_date",
-    return_expectations = {
-      "rate": "universal",
-      "int": {"distribution": "population_ages"},
-      "incidence" : 0.9
-    },
+    "covid_test_positive_date", return_expectations = {"rate": "universal", "int": {"distribution": "population_ages"}, "incidence" : 0.9},
   ),
   sex = patients.sex(
-    return_expectations = {
-      "rate": "universal",
-      "category": {"ratios": {"M": 0.49, "F": 0.51}},
-    }
+    return_expectations = {"rate": "universal", "category": {"ratios": {"M": 0.49, "F": 0.51}},}
   ),
   ethnicity = patients.categorised_as(
             {"Missing": "DEFAULT",
-            "White": "eth='1' OR (NOT eth AND ethnicity_sus='1')", 
+             "White": "eth='1' OR (NOT eth AND ethnicity_sus='1')", 
             "Mixed": "eth='2' OR (NOT eth AND ethnicity_sus='2')", 
             "South Asian": "eth='3' OR (NOT eth AND ethnicity_sus='3')", 
             "Black": "eth='4' OR (NOT eth AND ethnicity_sus='4')",  
@@ -565,16 +557,8 @@ study = StudyDefinition(
     },
   ),
   region_covid_therapeutics = patients.with_covid_therapeutics(
-    with_these_therapeutics = ["Sotrovimab", "Molnupiravir", "Paxlovid"],
-    with_these_indications = "non_hospitalised",
-    on_or_after = "covid_test_positive_date",
-    find_first_match_in_period = True,
-    returning = "region",
-    return_expectations = {
-      "rate": "universal",
-      "category": {
-        "ratios": {
-          "North East": 0.1, "North West": 0.1,"Yorkshire and The Humber": 0.1, "East Midlands": 0.1,"West Midlands": 0.1, "East": 0.1, "London": 0.2, "South West": 0.1, "South East": 0.1,},
+    with_these_therapeutics = ["Sotrovimab", "Molnupiravir", "Paxlovid"], with_these_indications = "non_hospitalised", on_or_after = "covid_test_positive_date", find_first_match_in_period = True,
+    returning = "region", return_expectations = {"rate": "universal","category": {"ratios": {"North East": 0.1, "North West": 0.1,"Yorkshire and The Humber": 0.1, "East Midlands": 0.1,"West Midlands": 0.1, "East": 0.1, "London": 0.2, "South West": 0.1, "South East": 0.1,},
       },
     },
   ),
@@ -582,12 +566,7 @@ study = StudyDefinition(
   # STP [NHS administration region based on geography, currently closest match to CMDU] 
   stp = patients.registered_practice_as_of(
     "covid_test_positive_date",
-    returning = "stp_code",
-    return_expectations = {
-      "rate": "universal",
-      "category": {
-        "ratios": {
-          "STP1": 0.1, "STP2": 0.1,"STP3": 0.1,"STP4": 0.1,"STP5": 0.1,"STP6": 0.1,"STP7": 0.1,"STP8": 0.1, "STP9": 0.1, "STP10": 0.1, }
+    returning = "stp_code", return_expectations = {"rate": "universal", "category": {"ratios": {"STP1": 0.1, "STP2": 0.1,"STP3": 0.1,"STP4": 0.1,"STP5": 0.1,"STP6": 0.1,"STP7": 0.1,"STP8": 0.1, "STP9": 0.1, "STP10": 0.1, }
       },
     },
   ),
@@ -600,35 +579,20 @@ study = StudyDefinition(
       "Three or more vaccinations": """ covid_vax_3 """
     },
     covid_vax_1 = patients.with_tpp_vaccination_record(
-      target_disease_matches = "SARS-2 CORONAVIRUS",
-      between = ["2020-06-08", "covid_test_positive_date"],
-      find_first_match_in_period = True,
-      returning = "date",
-      date_format = "YYYY-MM-DD"
+      target_disease_matches = "SARS-2 CORONAVIRUS", between = ["2020-06-08", "covid_test_positive_date"], find_first_match_in_period = True, returning = "date", date_format = "YYYY-MM-DD"
     ),
     covid_vax_2 = patients.with_tpp_vaccination_record(
-      target_disease_matches = "SARS-2 CORONAVIRUS",
-      between = ["covid_vax_1 + 19 days", "covid_test_positive_date"],
-      find_first_match_in_period = True,
-      returning = "date",
-      date_format = "YYYY-MM-DD"
+      target_disease_matches = "SARS-2 CORONAVIRUS", between = ["covid_vax_1 + 19 days", "covid_test_positive_date"], find_first_match_in_period = True, returning = "date", date_format = "YYYY-MM-DD"
     ),
     covid_vax_3 = patients.with_tpp_vaccination_record(
-      target_disease_matches = "SARS-2 CORONAVIRUS",
-      between = ["covid_vax_2 + 56 days", "covid_test_positive_date"],
-      find_first_match_in_period = True,
-      returning = "date",
-      date_format = "YYYY-MM-DD"
+      target_disease_matches = "SARS-2 CORONAVIRUS", between = ["covid_vax_2 + 56 days", "covid_test_positive_date"], find_first_match_in_period = True, returning = "date", date_format = "YYYY-MM-DD"
     ),
    covid_vax_declined = patients.with_these_clinical_events(
-      covid_vaccine_declined_codes,
-      returning="binary_flag",
-      on_or_before = "covid_test_positive_date",
+      covid_vaccine_declined_codes, returning="binary_flag", on_or_before = "covid_test_positive_date",
     ),
     return_expectations = {
       "rate": "universal",
-      "category": {
-        "ratios": {
+      "category": {"ratios": {
           "Un-vaccinated": 0.1,
           "Un-vaccinated (declined)": 0.1,
           "One vaccination": 0.1,
@@ -639,27 +603,13 @@ study = StudyDefinition(
     },
   ),
   last_vaccination_date = patients.with_tpp_vaccination_record(
-      target_disease_matches = "SARS-2 CORONAVIRUS",
-      on_or_before = "covid_test_positive_date",
-      find_last_match_in_period = True,
-      returning = "date",
-      date_format = "YYYY-MM-DD",
-      return_expectations={
-            "date": {"earliest": "2020-06-08", "latest": "today"},
-            "incidence": 0.95,
-      }
+      target_disease_matches = "SARS-2 CORONAVIRUS", on_or_before = "covid_test_positive_date", find_last_match_in_period = True, returning = "date", date_format = "YYYY-MM-DD",
+      return_expectations={"date": {"earliest": "2020-06-08", "latest": "today"},"incidence": 0.95,}
   ),
 
   bmi=patients.most_recent_bmi(
-      on_or_before="covid_test_positive_date",
-      minimum_age_at_measurement=18,
-      include_measurement_date=True,
-      date_format="YYYY-MM-DD",
-      return_expectations={
-            "date": {"earliest": "2020-01-01", "latest": "today"},
-            "float": {"distribution": "normal", "mean": 28, "stddev": 8},
-            "incidence": 0.95,
-        }
+      on_or_before="covid_test_positive_date", minimum_age_at_measurement=18, include_measurement_date=True, date_format="YYYY-MM-DD",
+      return_expectations={"date": {"earliest": "2020-01-01", "latest": "today"}, "float": {"distribution": "normal", "mean": 28, "stddev": 8}, "incidence": 0.95, }
   ),
   ## to return date, so to make binary in stata
   diabetes=comorbidity_snomed(diabetes_codes),
@@ -669,82 +619,41 @@ study = StudyDefinition(
 
 
   ### EXCLUSIONS 
-  ## Died
+  # Died
   has_died = patients.died_from_any_cause(
-    on_or_before = "covid_test_positive_date - 1 day",
-    returning = "binary_flag",
+    on_or_before = "covid_test_positive_date - 1 day", returning = "binary_flag",
   ),
   death_date = patients.died_from_any_cause(
-    returning = "date_of_death",
-    date_format = "YYYY-MM-DD",
-    on_or_after = "covid_test_positive_date - 1 day",
-    return_expectations = {
-      "date": {"earliest": "2021-12-20", "latest": "index_date"},
-      "incidence": 0.1
-    },
+    returning = "date_of_death", date_format = "YYYY-MM-DD", on_or_after = "covid_test_positive_date - 1 day", 
+    return_expectations = {"date": {"earliest": "2021-12-20", "latest": "index_date"},"incidence": 0.1},
   ),  
-  
-  ## De-registration
+  # De-registration
   dereg_date = patients.date_deregistered_from_all_supported_practices(
-    on_or_after = "covid_test_positive_date",
-    date_format = "YYYY-MM-DD",
-    return_expectations = {
-      "date": {"earliest": "2021-12-20", "latest": "index_date"},
-      "incidence": 0.1
-    },
+    on_or_after = "covid_test_positive_date", date_format = "YYYY-MM-DD", return_expectations = {"date": {"earliest": "2021-12-20", "latest": "index_date"}, "incidence": 0.1 },
   ), 
-  
-  ## Hospitalised with covid between positive test and 5 days
-  primary_covid_hospital_discharge_date = patients.admitted_to_hospital(
-    returning = "date_discharged",
-    with_these_primary_diagnoses = covid_icd10_codes,
-    with_patient_classification = ["1"], 
-    between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    date_format = "YYYY-MM-DD",
-    find_first_match_in_period = False,
-    return_expectations = {
-      "date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"},
-      "rate": "uniform",
-      "incidence": 0.05
-    },
+  # Hospitalised with covid between positive test and 5 days
+  primary_covid_hospital_discharge_date = patients.admitted_to_hospital (returning = "date_discharged", with_these_primary_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"], date_format = "YYYY-MM-DD",find_first_match_in_period = False, 
+    return_expectations = {"date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"},"rate": "uniform", "incidence": 0.05},
   ),
   any_covid_hospital_discharge_date = patients.admitted_to_hospital(
-    returning = "date_discharged",
-    with_these_diagnoses = covid_icd10_codes,
-    with_patient_classification = ["1"], 
-    with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
-    between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    date_format = "YYYY-MM-DD",
-    find_first_match_in_period = False,
-    return_expectations = {
-      "date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"},
-      "rate": "uniform",
-      "incidence": 0.05
-    },
+    returning = "date_discharged", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"], date_format = "YYYY-MM-DD", find_first_match_in_period = False,  
+    return_expectations = {"date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"}, "rate": "uniform", "incidence": 0.05 },
   ),
   
   #  pregnancy record in last 36 weeks.  pregnancy OR delivery code since latest pregnancy record:
   preg_36wks_date = patients.with_these_clinical_events(
-    pregnancy_primis_codes,
-    returning = "date",
-    find_last_match_in_period = True,
-    between = ["covid_test_positive_date - 252 days", "covid_test_positive_date - 1 day"],
-    date_format = "YYYY-MM-DD",
-  ),
+    pregnancy_primis_codes, returning = "date",  find_last_match_in_period = True, between = ["covid_test_positive_date - 252 days", "covid_test_positive_date - 1 day"], date_format = "YYYY-MM-DD",),
   pregdel = patients.with_these_clinical_events(
-    pregdel_primis_codes,
-    returning = "binary_flag", find_last_match_in_period = True, between = ["preg_36wks_date + 1 day", "covid_test_positive_date - 1 day"], date_format = "YYYY-MM-DD",
-  ),
+    pregdel_primis_codes, returning = "binary_flag", find_last_match_in_period = True, between = ["preg_36wks_date + 1 day", "covid_test_positive_date - 1 day"], date_format = "YYYY-MM-DD",),
   pregnancy = patients.satisfying(
     """
     gender = 'F' AND preg_age <= 50
     AND (preg_36wks_date AND NOT pregdel)
     """,
-    
-    gender = patients.sex(return_expectations = {"rate": "universal", "category": {"ratios": {"M": 0.49, "F": 0.51}},}
-    ),
-    preg_age = patients.age_as_of("preg_36wks_date", return_expectations = {"rate": "universal","int": {"distribution": "population_ages"}, "incidence" : 0.9 },
-    ),
+    gender = patients.sex(return_expectations = {"rate": "universal", "category": {"ratios": {"M": 0.49, "F": 0.51}},}),
+    preg_age = patients.age_as_of("preg_36wks_date", return_expectations = {"rate": "universal","int": {"distribution": "population_ages"}, "incidence" : 0.9 },),
   ),
 
   ## OUTCOME 
