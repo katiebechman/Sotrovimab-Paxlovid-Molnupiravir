@@ -1,32 +1,35 @@
 ********************************************************************************
 *
-*	Do-file:		data_preparation_and_descriptives.do
-*
-*	Project:		sotrovimab-and-Paxlovid
-*
-*	Programmed by:	Bang Zheng
-*
-*	Data used:		output/input.csv
-*
-*	Data created:	output/main.dta  (main analysis dataset)
-*
-*	Other output:	logs/data_preparation.log
-*
-********************************************************************************
-*
-*	Purpose: This do-file creates the variables required for the 
-*			 main analysis and saves into Stata dataset, and describes 
-*            variables by drug groups.
-*  
-********************************************************************************
+*	Do-file:			define covariates.do
+*	Project:			Sotrovimab-Paxlovid-Molnupiravir
+*   Date:  				15/2/23
+*	Programmed by:		Katie Bechman
+* 	Description:		data management, reformat variables, categorise variables, label variables 
+*	Data used:			data in memory (from output/input.csv) 
+*	Data created:		analysis files/main.dta  (main analysis dataset)
+*	Other output:		logfiles, printed to folder $Logdir
+*	User installed ado: (place .ado file(s) in analysis folder)
 
+****************************************************************************************************************
+**Set filepaths
+** global projectdir "C:\Users\k1635179\OneDrive - King's College London\Katie\OpenSAFELY\Sotrovimab-Paxlovid-Molnupiravir"
+global projectdir `c(pwd)'
+di "$projectdir"
+capture mkdir "$projectdir/output/data"
+capture mkdir "$projectdir/output/figures"
+capture mkdir "$projectdir/output/tables"
+global logdir "$projectdir/logs"
+di "$logdir"
 * Open a log file
 cap log close
-log using ./logs/data_preparation, replace t
-clear
+log using "$logdir/cleaning_dataset.log", replace
 
 * import dataset
-import delimited ./output/input.csv, delimiter(comma) varnames(1) case(preserve) 
+import delimited "$projectdir/output/input.csv", clear
+
+*Set Ado file path
+adopath + "$projectdir/analysis/extra_ados"
+
 describe
 codebook
 

@@ -329,26 +329,27 @@ study = StudyDefinition(
   
   ## Down's syndrome
   downs_syndrome_snomed=comorbidity_snomed(downs_syndrome_nhsd_snomed_codes),
-  downs_syndrome=comorbidity_icd(downs_syndrome_nhsd_icd10_codes),
+  downs_syndrome_icd=comorbidity_icd(downs_syndrome_nhsd_icd10_codes),
+  down_syndrome_nhsd=patients.minimum_of("downs_syndrome_snomed","downs_syndrome_icd"),
 
   ## Solid cancer
   cancer_opensafely_snomed=comorbidity_snomed_6m(combine_codelists(non_haematological_cancer_opensafely_snomed_codes, lung_cancer_opensafely_snomed_codes, chemotherapy_radiotherapy_opensafely_snomed_codes)),
   
   ## Haematological diseases (malignancy taken as 12m instead of 24m)
   haematopoietic_stem_cell_snomed=comorbidity_snomed_12m(haematopoietic_stem_cell_transplant_nhsd_snomed_codes),
-  haematopoietic_stem_cell_icd10=comorbidity_icd_12m(haematopoietic_stem_cell_transplant_nhsd_icd10_codes),
+  haematopoietic_stem_cell_icd=comorbidity_icd_12m(haematopoietic_stem_cell_transplant_nhsd_icd10_codes),
   haematological_malignancies_snomed=comorbidity_snomed_12m(haematological_malignancies_nhsd_snomed_codes),
-  haematological_malignancies_icd10=comorbidity_icd_12m(haematological_malignancies_nhsd_icd10_codes),
+  haematological_malignancies_icd=comorbidity_icd_12m(haematological_malignancies_nhsd_icd10_codes),
   haematopoietic_stem_cell_opcs4=comorbidity_ops_12m(haematopoietic_stem_cell_transplant_nhsd_opcs4_codes),
   sickle_cell_disease_nhsd_snomed=comorbidity_snomed(sickle_cell_disease_nhsd_snomed_codes),
-  sickle_cell_disease_nhsd_icd10=comorbidity_icd(sickle_cell_disease_nhsd_icd10_codes),
+  sickle_cell_disease_nhsd_icd=comorbidity_icd(sickle_cell_disease_nhsd_icd10_codes),
   haematological_disease_nhsd = patients.minimum_of("haematopoietic_stem_cell_snomed", 
-                                                    "haematopoietic_stem_cell_icd10", 
+                                                    "haematopoietic_stem_cell_icd", 
                                                     "haematopoietic_stem_cell_opcs4", 
                                                     "haematological_malignancies_snomed", 
-                                                    "haematological_malignancies_icd10",
+                                                    "haematological_malignancies_icd",
                                                     "sickle_cell_disease_nhsd_snomed", 
-                                                    "sickle_cell_disease_nhsd_icd10"), 
+                                                    "sickle_cell_disease_nhsd_icd"), 
                                             
   ## Renal disease  (to get access to UK Renal Registry - advanced CKD stages 4 and 5, dialysis,  kidney transplantation in 2y care- need aproval)
   ckd_stage_5_nhsd_snomed=comorbidity_snomed(ckd_stage_5_nhsd_snomed_codes),
@@ -372,7 +373,7 @@ study = StudyDefinition(
   Psoriasis_nhsd=comorbidity_snomed(Psoriasis_ctv3),
   Psoriatic_arthritis_nhsd=comorbidity_snomed(Psoriatic_arthritis_snomed),
   Ankylosing_Spondylitis_nhsd=comorbidity_snomed(Ankylosing_Spondylitis_ctv3),  
-  IBD_nhsd=comorbidity_snomed(IBD_ctv3),
+  IBD_ctv=comorbidity_snomed(IBD_ctv3),
   
   ## Immunosuppression - Treatment steriods (4x prescriptions steroids in 6m or high dose) / CYC / MMF/ TAC / CIC
   immunosuppresant_drugs_nhsd=drug_6m(combine_codelists(immunosuppresant_drugs_dmd_codes, immunosuppresant_drugs_snomed_codes)),
@@ -411,7 +412,7 @@ study = StudyDefinition(
   ),
   
   imid_nhsd = patients.minimum_of("rheumatoid_arthritis_nhsd_snomed", "rheumatoid_arthritis_nhsd_icd10", "SLE_nhsd_ctv", "SLE_nhsd_icd10", "Psoriasis_nhsd", 
-                                   "Psoriatic_arthritis_nhsd", "Ankylosing_Spondylitis_nhsd", "IBD_nhsd"), 
+                                   "Psoriatic_arthritis_nhsd", "Ankylosing_Spondylitis_nhsd", "IBD_ctv"), 
   imid_drug = patients.minimum_of("immunosuppresant_drugs_nhsd", "oral_steroid_drugs_nhsd", "methotrexate_drugs_nhsd", "ciclosporin_drugs_nhsd", "mycophenolate_drugs_nhsd"),
   imid_drug_HCD = patients.minimum_of("abatacept_highcostdrugs", "adalimumab_highcostdrugs", "alemtuzumab_highcostdrugs", "baricitinib_highcostdrugs", "brodalumab_highcostdrugs", 
                                    "certolizumab_highcostdrugs","etanercept_highcostdrugs", "golimumab_highcostdrugs",  "guselkumab_highcostdrugs", "infliximab_highcostdrugs",  
@@ -458,9 +459,11 @@ study = StudyDefinition(
   huntingtons_disease_nhsd_snomed=comorbidity_snomed(huntingtons_disease_nhsd_snomed_codes),
   huntingtons_disease_nhsd_icd10=comorbidity_icd(huntingtons_disease_nhsd_icd10_codes),
   huntingtons_disease_nhsd = patients.minimum_of("huntingtons_disease_nhsd_snomed", "huntingtons_disease_nhsd_icd10"),
+  neurological_disease_nhsd = patients.minimum_of("multiple_sclerosis_nhsd", "motor_neurone_disease_nhsd", "myasthenia_gravis_nhsd","huntingtons_disease_nhsd"),
   
-  ## Eligble 
+  ## Eligble // need to include imid_on_drug
   eligble = patients.minimum_of(
+    "down_syndrome_nhsd",
     "cancer_opensafely_snomed",
     "haematological_disease_nhsd",
     "ckd_stage_5_nhsd",
@@ -468,10 +471,7 @@ study = StudyDefinition(
     "immunosupression_nhsd",
     "hiv_aids_nhsd",
     "solid_organ_transplant_nhsd",
-    "multiple_sclerosis_nhsd",
-    "motor_neurone_disease_nhsd",
-    "myasthenia_gravis_nhsd",
-    "huntingtons_disease_nhsd",
+    "neurological_disease_nhsd",
     ),
   
   ## TREATMENT - MAB + Antivirals. Either use on_or_after = "index date" or between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"]
@@ -632,11 +632,11 @@ study = StudyDefinition(
     on_or_after = "covid_test_positive_date", date_format = "YYYY-MM-DD", return_expectations = {"date": {"earliest": "2021-12-20", "latest": "index_date"}, "incidence": 0.1 },
   ), 
   # Hospitalised with covid between positive test and 5 days
-  primary_covid_hospital_discharge_date = patients.admitted_to_hospital (returning = "date_discharged", with_these_primary_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], 
+  covid_hosp_discharge = patients.admitted_to_hospital (returning = "date_discharged", with_these_primary_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], 
     between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"], date_format = "YYYY-MM-DD",find_first_match_in_period = False, 
     return_expectations = {"date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"},"rate": "uniform", "incidence": 0.05},
   ),
-  any_covid_hospital_discharge_date = patients.admitted_to_hospital(
+  any_covid_hosp_discharge = patients.admitted_to_hospital(
     returning = "date_discharged", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
     between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"], date_format = "YYYY-MM-DD", find_first_match_in_period = False,  
     return_expectations = {"date": {"earliest": "2021-12-20", "latest": "index_date - 1 day"}, "rate": "uniform", "incidence": 0.05 },

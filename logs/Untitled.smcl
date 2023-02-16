@@ -1,0 +1,22 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\k1635179\OneDrive - King's College London\Katie\OpenSafely\Sotrovimab\Sotrovimab-Paxlovid-Molnupiravir\logs\Untitled.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}15 Feb 2023, 16:50:53
+
+{com}. do "C:\Users\k1635179\AppData\Local\Temp\STD49e4_000000.tmp"
+{txt}
+{com}. log using "$logdir/cleaning_dataset.log", replace
+{err}log file already open
+{txt}{search r(604), local:r(604);}
+
+end of do-file
+
+{search r(604), local:r(604);}
+
+{com}. do "C:\Users\k1635179\AppData\Local\Temp\STD49e4_000000.tmp"
+{txt}
+{com}. cap log close
+{smcl}
+{com}{sf}{ul off}
