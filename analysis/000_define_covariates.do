@@ -12,8 +12,8 @@
 
 ****************************************************************************************************************
 **Set filepaths
-** global projectdir "C:\Users\k1635179\OneDrive - King's College London\Katie\OpenSAFELY\Sotrovimab-Paxlovid-Molnupiravir"
-global projectdir `c(pwd)'
+global projectdir "C:\Users\k1635179\OneDrive - King's College London\Katie\OpenSAFELY\Sotrovimab-Paxlovid-Molnupiravir"
+//global projectdir `c(pwd)'
 di "$projectdir"
 capture mkdir "$projectdir/output/data"
 capture mkdir "$projectdir/output/figures"
@@ -30,126 +30,189 @@ import delimited "$projectdir/output/input.csv", clear
 *Set Ado file path
 adopath + "$projectdir/analysis/extra_ados"
 
-describe
-codebook
+//describe
+//codebook
 
 *  Convert strings to dates  *
-foreach var of varlist sotrovimab_covid_therapeutics molnupiravir_covid_therapeutics paxlovid_covid_therapeutics remdesivir_covid_therapeutics	///
-        casirivimab_covid_therapeutics sotrovimab_covid_approved sotrovimab_covid_complete sotrovimab_covid_not_start sotrovimab_covid_stopped ///
-		paxlovid_covid_approved paxlovid_covid_complete paxlovid_covid_not_start paxlovid_covid_stopped covid_test_positive_pre_date ///
-        covid_test_positive_date covid_test_positive_date2 covid_symptoms_snomed last_vaccination_date primary_covid_hospital_discharge primary_covid_hospital_admission ///
-	   any_covid_hospital_discharge_dat preg_36wks_date death_date dereg_date downs_syndrome_nhsd_snomed downs_syndrome_nhsd_icd10 cancer_opensafely_snomed ///
-	   cancer_opensafely_snomed_new haematopoietic_stem_cell_snomed haematopoietic_stem_cell_icd10 haematopoietic_stem_cell_opcs4 ///
-	   haematological_malignancies_snom haematological_malignancies_icd1 sickle_cell_disease_nhsd_snomed sickle_cell_disease_nhsd_icd10 ///
-	   ckd_stage_5_nhsd_snomed ckd_stage_5_nhsd_icd10 liver_disease_nhsd_snomed liver_disease_nhsd_icd10 immunosuppresant_drugs_nhsd ///
-	   oral_steroid_drugs_nhsd immunosupression_nhsd immunosupression_nhsd_new hiv_aids_nhsd_snomed  solid_organ_transplant_nhsd_snom solid_organ_nhsd_snomed_new ///
-	   solid_organ_transplant_nhsd_opcs solid_organ_transplant_nhsd solid_organ_transplant_nhsd_new multiple_sclerosis_nhsd_snomed multiple_sclerosis_nhsd_icd10 ///
-	   motor_neurone_disease_nhsd_snome motor_neurone_disease_nhsd_icd10 myasthenia_gravis_nhsd_snomed myasthenia_gravis_nhsd_icd10 ///
-	   huntingtons_disease_nhsd_snomed huntingtons_disease_nhsd_icd10 bmi_date_measured covid_positive_test_30_days_post ///
-	   covid_hosp_outcome_date0 covid_hosp_outcome_date1 covid_hosp_outcome_date2 covid_hosp_discharge_date0 covid_hosp_discharge_date1 covid_hosp_discharge_date2 ///
-	   covid_hosp_date_emergency0 covid_hosp_date_emergency1 covid_hosp_date_emergency2 covid_emerg_discharge_date0 covid_emerg_discharge_date1 covid_emerg_discharge_date2 ///
-	   covid_hosp_date_mabs_procedure covid_hosp_date_mabs_not_pri covid_hosp_date0_not_primary covid_hosp_date1_not_primary covid_hosp_date2_not_primary ///
-	   covid_discharge_date0_not_pri covid_discharge_date1_not_pri covid_discharge_date2_not_pri death_with_covid_on_the_death_ce death_with_covid_underlying_date hospitalisation_outcome_date0 ///
-	   hospitalisation_outcome_date1 hospitalisation_outcome_date2 hosp_discharge_date0 hosp_discharge_date1 hosp_discharge_date2 covid_hosp_date_mabs_all_cause date_treated start_date ///
-	   downs_syndrome_nhsd haematological_disease_nhsd ckd_stage_5_nhsd liver_disease_nhsd hiv_aids_nhsd  ///
-	   multiple_sclerosis_nhsd motor_neurone_disease_nhsd myasthenia_gravis_nhsd huntingtons_disease_nhsd sickle_cell_disease_nhsd advanced_decompensated_cirrhosis decompensated_cirrhosis_icd10 ///
-	   ascitic_drainage_snomed ascitic_drainage_snomed_pre ckd_stages_3_5 ckd_primis_stage_date ckd3_icd10 ckd4_icd10 ckd5_icd10 dialysis dialysis_icd10 dialysis_procedure kidney_transplant kidney_transplant_icd10 ///
-	   kidney_transplant_procedure RRT RRT_icd10 RRT_procedure creatinine_ctv3_date creatinine_snomed_date creatinine_short_snomed_date eGFR_record_date eGFR_short_record_date ///
-	   solid_organ_transplant_snomed drugs_do_not_use drugs_consider_risk  {
-  capture confirm string variable `var'
-  if _rc==0 {
-  rename `var' a
-  gen `var' = date(a, "YMD")
-  drop a
-  format %td `var'
-  }
+foreach var of varlist 	 covid_test_positive_date				///
+						 covid_test_positive_date2 				///
+						 covid_symptoms_snomed 					///	
+						 prior_covid_date				    	///
+						 sotrovimab								///
+						 molnupiravir							/// 
+						 paxlovid								///
+						 remdesivir								///
+						 casirivimab							///
+						 sotrovimab_not_start					///
+						 molnupiravir_not_start					///
+						 paxlovid_not_start						///
+						 sotrovimab_stopped						///
+						 molnupiravir_stopped					///
+						 paxlovid_stopped						///
+						 date_treated							///
+						 last_vaccination_date 					///
+						 death_date								///
+						 dereg_date       						///
+						 covid_hosp_discharge					///
+						 any_covid_hosp_discharge				///			
+						 ae_diverticulitis_icd					///
+						 ae_diverticulitis_snomed				///
+					     ae_diarrhoea_snomed					///
+						 ae_taste_snomed						///
+						 ae_taste_icd							///
+						 ae_rheumatoid_arthritis				///
+						 ae_sle									///
+						 ae_psoriasis_snomed					///
+						 ae_psoriatic_arthritis_snomed			///
+						 ae_ankylosing_spondylitis_ctv			///
+						 ae_ibd_snomed							///
+						 rheumatoid_arthritis_nhsd_snomed		///
+						 rheumatoid_arthritis_nhsd_icd10		///
+						 sle_nhsd_ctv							///
+						 sle_nhsd_icd10							///
+						 psoriasis_nhsd							///
+						 psoriatic_arthritis_nhsd				///
+						 ankylosing_spondylitis_nhsd			///
+						 ibd_ctv								///
+						 all_hosp_date 							///
+						 covid_hosp_date 						///
+						 emerg_covid_hosp_date 					///
+						 covid_hosp_date_mabs_procedure 		///
+						 died_date_ons							///
+						 died_ons_covid							///
+						 {					 
+	capture confirm string variable `var'
+	if _rc==0 {
+	rename `var' a
+	gen `var' = date(a, "YMD")
+	drop a
+	format %td `var'
+ }
 }
-*the following date variables had no observation*
-*hiv_aids_nhsd_icd10
-*transplant_all_y_codes_opcs4
-*transplant_thymus_opcs4
-*transplant_conjunctiva_y_code_op
-*transplant_conjunctiva_opcs4
-*transplant_stomach_opcs4
-*transplant_ileum_1_Y_codes_opcs4
-*transplant_ileum_2_Y_codes_opcs4
-*transplant_ileum_1_opcs4
-*transplant_ileum_2_opcs4
 
 *check hosp/death event date range*
-codebook covid_hosp_outcome_date2 hospitalisation_outcome_date2 death_date
+codebook covid_test_positive_date all_hosp_date died_date_ons
 
-*exclusion criteria*
-keep if sotrovimab_covid_therapeutics==start_date | paxlovid_covid_therapeutics==start_date
-sum age,de
+***Exposure*
+*check drug given within covid test + 5 days 
+foreach var of varlist sotrovimab molnupiravir paxlovid {
+    gen `var'_check = 1 if `var'>=covid_test_positive_date & `var'<=covid_test_positive_date+5 & `var'!=.
+	replace `var'_check = 0 if (`var' < covid_test_positive_date | `var' > covid_test_positive_date + 5) & `var'!=.
+	codebook `var'
+	tab `var'_check, m  // should be no 0s
+	sum `var'_not_start // number prescribed but not started
+	gen `var'_started = 1 if `var'_not_start==. & `var'_check==1
+	tab `var'_started, m
+}
+gen drug=1 if sotrovimab==date_treated & sotrovimab_start==1
+replace drug=2 if paxlovid==date_treated & paxlovid_start==1
+replace drug=3 if molnupiravir==date_treated & molnupiravir_start==1
+replace drug=0 if drug==.
+label define drug 0 "control" 1 "sotrovimab" 2 "paxlovid" 3"molnupiravir", replace
+label values drug drug
+tab drug, m
+gen start_date=date_treated if drug>0
+format start_date %td
+egen median_time = median(date_treated - covid_test_positive_date) if drug>0
+egen median_max = max(median_time)
+replace start_date = covid_test_positive_date + median_max if drug==0
+
+***Inclusion criteria*
 keep if age>=18 & age<110
-tab sex,m
 keep if sex=="F"|sex=="M"
 keep if has_died==0
-keep if registered_treated==1
-tab covid_test_positive covid_positive_previous_30_days,m
-*keep if covid_test_positive==1 & covid_positive_previous_30_days==0
-*restrict start_date to 2022Feb10 to now*
-*loose this restriction to increase N?*
-keep if start_date>=mdy(02,11,2022)&start_date<=mdy(08,01,2022)
-drop if stp==""
-*exclude those with other drugs before sotro or Paxlovid, and those receiving sotro and Paxlovid on the same day*
-drop if sotrovimab_covid_therapeutics!=. & ( molnupiravir_covid_therapeutics<=sotrovimab_covid_therapeutics| remdesivir_covid_therapeutics<=sotrovimab_covid_therapeutics| casirivimab_covid_therapeutics<=sotrovimab_covid_therapeutics)
-drop if paxlovid_covid_therapeutics!=. & ( molnupiravir_covid_therapeutics<= paxlovid_covid_therapeutics | remdesivir_covid_therapeutics<= paxlovid_covid_therapeutics | casirivimab_covid_therapeutics<= paxlovid_covid_therapeutics )
-count if sotrovimab_covid_therapeutics!=. & paxlovid_covid_therapeutics!=.
-drop if sotrovimab_covid_therapeutics==paxlovid_covid_therapeutics
-*exclude those hospitalised after test positive and before treatment?
+*check IMID on drug should only include those with imid AND (imid_drug or drug_HCD)* 
+tab imid_on_drug if imid_on_drug==1 & imid_nhsd==1 & imid_drug==0 & imid_drug_hcd==0 // should be no 0
+keep if eligible==1	// should be no 0s		
+*check covid positive, and not repeat covid test after an infection within 30 days prior
+tab covid_test_positive covid_positive_previous_30_days, m
+keep if covid_test_positive==1 & covid_positive_previous_30_days==0
+
+***Exclusion criteria*
+*capture and exclude COVID-hosp admission/death or deregistration is on the start date [not to exclude other causes of admission on start date - drug reactions etc]
+bys drug: count if start_date>=dereg_date & start_date !=.
+bys drug: count if start_date>death_date
+drop if start_date>=death_date | start_date>=dereg_date
+
+*** Primary outcome - AESI
+gen imae = 0
+gen imae_serious = 0
+gen aesi_spc = 0
+gen aesi_spc_serious = 0
+global aesi  	ae_diverticulitis_icd					///
+				ae_diverticulitis_snomed				///
+				ae_diarrhoea_snomed						///
+				ae_taste_snomed							///
+				ae_taste_icd	
+global imae  	ae_rheumatoid_arthritis_snomed			///
+				ae_rheumatoid_arthritis_icd				///
+				ae_sle_ctv								///
+				ae_sle_icd								///
+				ae_psoriasis_snomed						///
+				ae_psoriatic_arthritis_snomed			///
+				ae_ankylosing_spondylitis_ctv			///
+				ae_ibd_snomed
+foreach x in $aesi {
+				display "`x'"
+				bys drug: count if (`x' < covid_test_positive_date | `x' > covid_test_positive_date + 28) & `x'!=.
+				replace `x'=. if (`x' < covid_test_positive_date | `x' > covid_test_positive_date + 28) & `x'!=.
+				replace aesi_spc = 1 if `x' !=.
+				replace aesi_spc_serious = 1 if `x' !=. & (`x'==all_hosp_date)
+}
+foreach y in $imae {
+				display "`y'"
+				bys drug: count if (`y' < covid_test_positive_date | `y' > covid_test_positive_date + 28) & `x'!=.
+				replace `y'=. if (`y' < covid_test_positive_date | `y' > covid_test_positive_date + 28) & `y'!=.
+				replace imae  = 1 if `y' !=.
+				replace imae_serious = 1 if `y' !=. & (`y'==all_hosp_date)
+}
+gen new_ae_ra = ae_rheumatoid_arthritis if rheumatoid_arthritis_nhsd_snomed==0 & rheumatoid_arthritis_nhsd_icd10==0  // need to do icd for psa, psorasis, ibd, ankspon
+gen new_ae_sle = ae_sle if sle_nhsd_ctv==0 & sle_nhsd_icd10==0
+gen new_ae_psoriasis = ae_psoriasis_snomed if psoriasis_nhsd==0
+gen new_ae_psoriatic_arthritis = ae_psoriatic_arthritis_snomed if psoriatic_arthritis_nhsd==0
+gen new_ae_ankylosing_spondylitis = ae_ankylosing_spondylitis_ctv if ankylosing_spondylitis_nhsd==0
+gen new_ae_ibd = ae_ae_ibd_snomed if ibd_ctv==0
+
+gen aesi = 0
+gen aesi_serious = 0
 
 
-*define exposure*
-describe
-gen drug=1 if sotrovimab_covid_therapeutics==start_date
-replace drug=0 if paxlovid_covid_therapeutics ==start_date
-label define drug_Paxlovid 1 "sotrovimab" 0 "Paxlovid"
-label values drug drug_Paxlovid
-tab drug,m
 
 
-*correcting COVID hosp events: further ignore any day cases or sotro initiators who had COVID hosp record with mab procedure codes on Day 0 or 1 *
-count if covid_hosp_outcome_date0!=start_date&covid_hosp_outcome_date0!=.
-count if covid_hosp_outcome_date1!=(start_date+1)&covid_hosp_outcome_date1!=.
-by drug, sort: count if covid_hosp_outcome_date0==covid_hosp_discharge_date0&covid_hosp_outcome_date0!=.
-by drug, sort: count if covid_hosp_outcome_date1==covid_hosp_discharge_date1&covid_hosp_outcome_date1!=.
-by drug, sort: count if covid_hosp_outcome_date0==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure!=.
-by drug, sort: count if covid_hosp_outcome_date1==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure!=.
-by drug, sort: count if covid_hosp_outcome_date0==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date0!=.&covid_hosp_outcome_date0==covid_hosp_discharge_date0
-by drug, sort: count if covid_hosp_outcome_date1==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date1!=.&covid_hosp_outcome_date1==covid_hosp_discharge_date1
-by drug, sort: count if covid_hosp_outcome_date0==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date0!=.&(covid_hosp_discharge_date0 - covid_hosp_outcome_date0)==1
-by drug, sort: count if covid_hosp_outcome_date1==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date1!=.&(covid_hosp_discharge_date1 - covid_hosp_outcome_date1)==1
-by drug, sort: count if covid_hosp_outcome_date0==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date0!=.&(covid_hosp_discharge_date0 - covid_hosp_outcome_date0)==2
-by drug, sort: count if covid_hosp_outcome_date1==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date1!=.&(covid_hosp_discharge_date1 - covid_hosp_outcome_date1)==2
-*check if any patient discharged in AM and admitted in PM*
-count if primary_covid_hospital_admission!=.&primary_covid_hospital_discharge==.
-count if primary_covid_hospital_admission==.&primary_covid_hospital_discharge!=.
-count if primary_covid_hospital_admission!=.&primary_covid_hospital_discharge!=.&primary_covid_hospital_admission==primary_covid_hospital_discharge
-count if primary_covid_hospital_admission!=.&primary_covid_hospital_discharge!=.&primary_covid_hospital_admission<primary_covid_hospital_discharge
-count if primary_covid_hospital_admission!=.&primary_covid_hospital_discharge!=.&primary_covid_hospital_admission>primary_covid_hospital_discharge
-*ignore day cases and mab procedures in day 0/1*
-replace covid_hosp_outcome_date0=. if covid_hosp_outcome_date0==covid_hosp_discharge_date0&covid_hosp_outcome_date0!=.
-replace covid_hosp_outcome_date1=. if covid_hosp_outcome_date1==covid_hosp_discharge_date1&covid_hosp_outcome_date1!=.
-replace covid_hosp_outcome_date0=. if covid_hosp_outcome_date0==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure!=.&drug==1
-replace covid_hosp_outcome_date1=. if covid_hosp_outcome_date1==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure!=.&drug==1
+*** Secondary outcome - SAEs hospitalisation or death including COVID-19
+*correcting COVID hosp events:  ignore any day cases or sotro initiators who had COVID hosp record with mab procedure codes [nb have only excluded if same day, not day+1]
+by drug, sort: count if covid_hosp_date == covid_hosp_discharge & covid_hosp_date!=. 
+by drug, sort: count if covid_hosp_date == covid_hosp_date_mabs_procedure & covid_hosp_date_mabs_procedure!=. 
+by drug, sort: count if covid_hosp_date == covid_hosp_date_mabs_procedure & covid_hosp_date!=. & covid_hosp_date==covid_hosp_discharge
+replace covid_hosp_date=. if covid_hosp_date==covid_hosp_date_mabs_procedure & covid_hosp_date_mabs_procedure!=. & drug==1
 
-gen covid_hospitalisation_outcome_da=covid_hosp_outcome_date2
-replace covid_hospitalisation_outcome_da=covid_hosp_outcome_date1 if covid_hosp_outcome_date1!=.
-replace covid_hospitalisation_outcome_da=covid_hosp_outcome_date0 if covid_hosp_outcome_date0!=.&drug==0
-replace covid_hospitalisation_outcome_da=covid_hosp_outcome_date0 if covid_hosp_outcome_date0!=.&drug==1
 
-gen days_to_covid_admission=covid_hospitalisation_outcome_da-start_date if covid_hospitalisation_outcome_da!=.
+
+*** Secondary outcome - severe drug reactions (including DRESS, SJS, TEN, anaphylaxis) 
+
+
+
+*capture and exclude COVID-hospital admission/death on the start date
+by drug, sort: count if start_date != covid_hosp_date & covid_hosp_date !=.
+by drug, sort: count if start_date == covid_hosp_date 
+drop if start_date>=covid_hospitalisation_outcome_da| start_date>=death_with_covid_on_the_death_ce|start_date>=death_date|start_date>=dereg_date
+
+
+*time to admission
+gen days_to_covid_admission=covid_hosp_date-start_date if covid_hospitalisation_outcome_da!=.
 by drug days_to_covid_admission, sort: count if covid_hospitalisation_outcome_da!=.
 
-by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_discharge_date2&covid_hosp_outcome_date2!=.&days_to_covid_admission>=2
-by drug days_to_covid_admission, sort: count if covid_hosp_outcome_date2==covid_hosp_discharge_date2&covid_hosp_outcome_date2!=.&days_to_covid_admission>=2
-by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure!=.&days_to_covid_admission>=2
-by drug days_to_covid_admission, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure!=.&days_to_covid_admission>=2
-by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date2!=.&covid_hosp_outcome_date2==covid_hosp_discharge_date2&days_to_covid_admission>=2
-by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date2!=.&(covid_hosp_discharge_date2 - covid_hosp_outcome_date2)==1&days_to_covid_admission>=2
-by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date2!=.&(covid_hosp_discharge_date2 - covid_hosp_outcome_date2)==2&days_to_covid_admission>=2
+by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_discharge_date2&covid_hosp_outcome_date2<=(start_date+28)&days_to_covid_admission>=2
+by drug days_to_covid_admission, sort: count if covid_hosp_outcome_date2==covid_hosp_discharge_date2&covid_hosp_outcome_date2<=(start_date+28)&days_to_covid_admission>=2
+by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure<=(start_date+28)&days_to_covid_admission>=2
+by drug days_to_covid_admission, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure<=(start_date+28)&days_to_covid_admission>=2
+by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date2<=(start_date+28)&covid_hosp_outcome_date2==covid_hosp_discharge_date2&days_to_covid_admission>=2
+by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date2<=(start_date+28)&(covid_hosp_discharge_date2 - covid_hosp_outcome_date2)==1&days_to_covid_admission>=2
+by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_outcome_date2<=(start_date+28)&(covid_hosp_discharge_date2 - covid_hosp_outcome_date2)==2&days_to_covid_admission>=2
+count if covid_hosp_outcome_date2==covid_hosp_discharge_date2&covid_hosp_outcome_date2<=(start_date+28)&days_to_covid_admission>=2&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+count if covid_hosp_outcome_date2==covid_hosp_discharge_date2&covid_hosp_outcome_date2<=(start_date+28)&days_to_covid_admission>=2&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+by drug, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure<=(start_date+28)&days_to_covid_admission>=2&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+by drug days_to_covid_admission, sort: count if covid_hosp_outcome_date2==covid_hosp_date_mabs_procedure&covid_hosp_date_mabs_procedure<=(start_date+28)&days_to_covid_admission>=2&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
 *ignore and censor day cases on or after day 2 from this analysis*
 *ignore and censor admissions for mab procedure >= day 2 and with same-day or 1-day discharge*
 gen covid_hosp_date_day_cases_mab=covid_hospitalisation_outcome_da if covid_hosp_outcome_date2==covid_hosp_discharge_date2&covid_hosp_outcome_date2!=.&days_to_covid_admission>=2
@@ -160,9 +223,33 @@ replace covid_hospitalisation_outcome_da=. if covid_hosp_outcome_date2==covid_ho
 tab covid_hosp_admission_method,m
 tab drug covid_hosp_admission_method, row chi
 *by drug days_to_covid_admission, sort: count if covid_hospitalisation_outcome_da!=covid_hosp_date_emergency&covid_hospitalisation_outcome_da!=.
-*capture and exclude COVID-hospital admission/death on the start date
-by drug, sort: count if start_date==covid_hospitalisation_outcome_da| start_date==death_with_covid_on_the_death_ce
-drop if start_date>=covid_hospitalisation_outcome_da| start_date>=death_with_covid_on_the_death_ce|start_date>=death_date|start_date>=dereg_date
+
+
+*count recorded day cases or regulars*
+by drug, sort: count if covid_hosp_outcome_date0==.&covid_hosp_outcome_day_date0==start_date
+by drug, sort: count if covid_hosp_outcome_date1==.&covid_hosp_outcome_day_date1==start_date+1
+by drug, sort: count if covid_hosp_outcome_date2>covid_hosp_outcome_day_date2
+by drug, sort: count if covid_hosp_outcome_date0==.&covid_hosp_outcome_day_date0==start_date&(covid_hosp_discharge_day_date0-covid_hosp_outcome_day_date0)==0
+by drug, sort: count if covid_hosp_outcome_date1==.&covid_hosp_outcome_day_date1==start_date+1&(covid_hosp_discharge_day_date1-covid_hosp_outcome_day_date1)==0
+by drug, sort: count if covid_hosp_outcome_date2>covid_hosp_outcome_day_date2&(covid_hosp_discharge_day_date2-covid_hosp_outcome_day_date2)==0
+by drug, sort: count if covid_hosp_outcome_date0==.&covid_hosp_outcome_day_date0==start_date&(covid_hosp_discharge_day_date0-covid_hosp_outcome_day_date0)==1
+by drug, sort: count if covid_hosp_outcome_date1==.&covid_hosp_outcome_day_date1==start_date+1&(covid_hosp_discharge_day_date1-covid_hosp_outcome_day_date1)==1
+by drug, sort: count if covid_hosp_outcome_date2>covid_hosp_outcome_day_date2&(covid_hosp_discharge_day_date2-covid_hosp_outcome_day_date2)==1
+by drug, sort: count if covid_hosp_outcome_date0==.&covid_hosp_outcome_day_date0==start_date&covid_hosp_outcome_day_date0==covid_hosp_date_mabs_day
+by drug, sort: count if covid_hosp_outcome_date1==.&covid_hosp_outcome_day_date1==start_date+1&covid_hosp_outcome_day_date1==covid_hosp_date_mabs_day
+by drug, sort: count if covid_hosp_outcome_date2>covid_hosp_outcome_day_date2&covid_hosp_outcome_day_date2==covid_hosp_date_mabs_day
+
+count if covid_hosp_outcome_date0==.&covid_hosp_outcome_day_date0==start_date&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+count if covid_hosp_outcome_date1==.&covid_hosp_outcome_day_date1==start_date+1&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+count if covid_hosp_outcome_date2>covid_hosp_outcome_day_date2&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+count if covid_hosp_outcome_date0==.&covid_hosp_outcome_day_date0==start_date&covid_hosp_outcome_day_date0==covid_hosp_date_mabs_day&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+count if covid_hosp_outcome_date1==.&covid_hosp_outcome_day_date1==start_date+1&covid_hosp_outcome_day_date1==covid_hosp_date_mabs_day&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+count if covid_hosp_outcome_date2>covid_hosp_outcome_day_date2&covid_hosp_outcome_day_date2==covid_hosp_date_mabs_day&sotrovimab_covid_therapeutics==.&casirivimab_covid_therapeutics==.
+
+
+
+
+
 
 
 *define outcome and follow-up time*

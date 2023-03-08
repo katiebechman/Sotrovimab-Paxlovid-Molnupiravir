@@ -224,6 +224,10 @@ mepolizumab_high_cost_drugs_codes = codelist_from_csv(
 risankizumab_high_cost_drugs_codes = codelist_from_csv(
   "codelists/opensafely-high-cost-drugs-risankizumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
 )
+
+rituximab_high_cost_drugs_codes = codelist_from_csv(
+  "codelists/opensafely-high-cost-drugs-rituximab.csv",   system = "high_cost_drugs",   column = "olddrugname"
+)
 sarilumab_high_cost_drugs_codes = codelist_from_csv(
   "codelists/opensafely-high-cost-drugs-sarilumab.csv",   system = "high_cost_drugs",   column = "olddrugname"
 )

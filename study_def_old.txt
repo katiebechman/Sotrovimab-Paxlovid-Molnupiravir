@@ -10,112 +10,122 @@ end_date = date.today().isoformat()
 def comorbidity_snomed(dx_codelist):
   return patients.with_these_clinical_events(
       dx_codelist,
-      returning = "binary_flag",
+      returning="date",
       on_or_before ="covid_test_positive_date",
       find_last_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.1,
+          "date": {"earliest": "1950-01-01", "latest": end_date},
       },
   )
 def comorbidity_snomed_6m(dx_codelist):
   return patients.with_these_clinical_events(
       dx_codelist,
-      returning = "binary_flag",
+      returning="date",
       between = ["covid_test_positive_date - 6 months", "covid_test_positive_date"],
       find_last_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.1,
+          "date": {"earliest": "2020-07-16", "latest": end_date},
       },
   )
 def comorbidity_snomed_12m(dx_codelist):
   return patients.with_these_clinical_events(
       dx_codelist,
-      returning = "binary_flag",
+      returning="date",
       between = ["covid_test_positive_date - 12 months", "covid_test_positive_date"],
       find_last_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.1,
+          "date": {"earliest": "2020-12-16", "latest": end_date},
       },
   )
 def comorbidity_icd(dx_codelist):
   return patients.admitted_to_hospital(
       with_these_diagnoses = dx_codelist,
-      returning = "binary_flag",
+      returning="date_admitted",
       on_or_before = "covid_test_positive_date",
       find_last_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.1,
+          "date": {"earliest": "1950-01-01", "latest": end_date},
       },
   )
 def comorbidity_icd_12m(dx_codelist):
   return patients.admitted_to_hospital(
       with_these_diagnoses = dx_codelist,
-      returning = "binary_flag",
+      returning="date_admitted",
       between = ["covid_test_positive_date - 12 months", "covid_test_positive_date"],
       find_last_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.1,
+          "date": {"earliest": "2020-12-16", "latest": end_date},
       },
   )
 def comorbidity_ops(dx_codelist):
   return patients.admitted_to_hospital(
       with_these_procedures=dx_codelist,
-      returning = "binary_flag",
+      returning="date_admitted",
       on_or_before = "covid_test_positive_date",
       find_last_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.01,
+          "date": {"earliest": "2020-12-16", "latest": end_date},
           "rate": "exponential_increase",
       },
   )
 def comorbidity_ops_12m(dx_codelist):
   return patients.admitted_to_hospital(
       with_these_procedures=dx_codelist,
-      returning = "binary_flag",
+      returning="date_admitted",
       between = ["covid_test_positive_date - 12 months", "covid_test_positive_date"],
       find_last_match_in_period=True,
       date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.01,
+          "date": {"earliest": "2020-02-01", "latest": end_date},
           "rate": "exponential_increase",
       },
   )
 def drug_6m(dx_codelist):
   return patients.with_these_medications(
       dx_codelist,
-      returning = "binary_flag",
+      returning="date",
       between = ["covid_test_positive_date - 6 months", "covid_test_positive_date"],
       find_last_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.01,
+          "date": {"earliest": "2021-06-16", "latest": end_date},
       },
   )
 def drug_12m(dx_codelist):
   return patients.with_these_medications(
       dx_codelist,
-      returning = "binary_flag",
+      returning="date",
       between = ["covid_test_positive_date - 12 months", "covid_test_positive_date"],
       find_last_match_in_period=True,
+      date_format="YYYY-MM-DD",
       return_expectations={
           "incidence": 0.01,
+          "date": {"earliest": "2020-12-16", "latest": end_date},
       },
   )
 def high_cost_drugs_3m(dx_codelist):
   return patients.with_high_cost_drugs(
-      returning = "binary_flag",
+      returning="date",
       between = ["covid_test_positive_date - 3 months", "covid_test_positive_date"],
       find_last_match_in_period=True,
+      date_format="YYYY-MM",
       return_expectations={
           "incidence": 0.01,
-      },
-  ) 
-def high_cost_drugs_6m(dx_codelist):
-  return patients.with_high_cost_drugs(
-      returning = "binary_flag",
-      between = ["covid_test_positive_date - 6 months", "covid_test_positive_date"],
-      find_last_match_in_period=True,
-      return_expectations={
-          "incidence": 0.01,
+          "date": {"earliest": "2021-09-16", "latest": end_date},
       },
   ) 
 def covid_therapeutics(dx_codelist):
@@ -127,7 +137,63 @@ def covid_therapeutics(dx_codelist):
       returning="date",
       date_format="YYYY-MM-DD",
       return_expectations={
-          "incidence": 0.9,
+          "incidence": 0.2,
+          "date": {"earliest": "2021-12-16"},
+      },
+  )
+def covid_therapeutics_approved(dx_codelist):
+  return patients.with_covid_therapeutics(
+      dx_codelist,
+      with_these_statuses = ["Approved"],
+      with_these_indications = "non_hospitalised",
+      between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+      find_last_match_in_period=True,
+      returning="date",
+      date_format="YYYY-MM-DD",
+      return_expectations={
+          "incidence": 0.2,
+          "date": {"earliest": "2021-12-16"},
+      },
+  )
+def covid_therapeutics_complete(dx_codelist):
+  return patients.with_covid_therapeutics(
+      dx_codelist,
+      with_these_statuses = ["Treatment Complete"], 
+      with_these_indications = "non_hospitalised",
+      between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+      find_last_match_in_period=True,
+      returning="date",
+      date_format="YYYY-MM-DD",
+      return_expectations={
+          "incidence": 0.2,
+          "date": {"earliest": "2021-12-16"},
+      },
+  )
+def covid_therapeutics_could_not_start(dx_codelist):
+  return patients.with_covid_therapeutics(
+      dx_codelist,
+      with_these_indications = "non_hospitalised",
+      with_these_statuses = ["Treatment Not Started"],
+      between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+      find_last_match_in_period=True,
+      returning="date",
+      date_format="YYYY-MM-DD",
+      return_expectations={
+          "incidence": 0.2,
+          "date": {"earliest": "2021-12-16"},
+      },
+  )
+def covid_therapeutics_stopped(dx_codelist):
+  return patients.with_covid_therapeutics(
+      dx_codelist,
+      with_these_indications = "non_hospitalised",
+      with_these_statuses = ["Treatment Stopped"],
+      between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+      find_last_match_in_period=True,
+      returning="date",
+      date_format="YYYY-MM-DD",
+      return_expectations={
+          "incidence": 0.2,
           "date": {"earliest": "2021-12-16"},
       },
   )
@@ -195,7 +261,7 @@ study = StudyDefinition(
     age >= 18 AND age < 110
     AND NOT has_died
     AND covid_test_positive
-    AND eligible
+    AND eligble
     """,
   ),
         
@@ -296,6 +362,7 @@ study = StudyDefinition(
   # # advanced_decompensated_cirrhosis=comorbidity_snomed(advanced_decompensated_cirrhosis_snomed_codes),
   # # decompensated_cirrhosis_icd10=comorbidity_icd(advanced_decompensated_cirrhosis_icd10_codes),
   # # ascitic_drainage_snomed=comorbidity_snomed(ascitic_drainage_snomed_codes),
+
   liver_disease_nhsd = patients.maximum_of("liver_disease_nhsd_snomed", "liver_disease_nhsd_icd10"), 
 
   ## Immune-mediated inflammatory disorders (IMID) 
@@ -334,7 +401,6 @@ study = StudyDefinition(
   upadacitinib_highcostdrugs = high_cost_drugs_3m(upadacitinib_high_cost_drugs_codes),
   ustekinumab_highcostdrugs = high_cost_drugs_3m(ustekinumab_high_cost_drugs_codes),
   vedolizumab_highcostdrugs = high_cost_drugs_3m(vedolizumab_high_cost_drugs_codes),
-  rituximab_highcostdrugs = high_cost_drugs_6m(rituximab_high_cost_drugs_codes),
 
   oral_steroid_drug_nhsd_6m_count = patients.with_these_medications(
     codelist = combine_codelists(oral_steroid_drugs_dmd_codes, oral_steroid_drugs_snomed_codes),
@@ -351,18 +417,8 @@ study = StudyDefinition(
   imid_drug_HCD = patients.maximum_of("abatacept_highcostdrugs", "adalimumab_highcostdrugs", "alemtuzumab_highcostdrugs", "baricitinib_highcostdrugs", "brodalumab_highcostdrugs", 
                                    "certolizumab_highcostdrugs","etanercept_highcostdrugs", "golimumab_highcostdrugs",  "guselkumab_highcostdrugs", "infliximab_highcostdrugs",  
                                    "mepolizumab_highcostdrugs","risankizumab_highcostdrugs", "sarilumab_highcostdrugs", "secukinumab_highcostdrugs", "tildrakizumab_highcostdrugs",
-                                   "tocilizumab_highcostdrugs", "rituximab_highcostdrugs", "tofacitinib_highcostdrugs", "upadacitinib_highcostdrugs","ustekinumab_highcostdrugs", "vedolizumab_highcostdrugs"),
-  imid_drug_all = patients.maximum_of("imid_drug", "imid_drug_HCD"),
-  imid_on_drug = patients.satisfying(
-    """
-    imid_drug_all 
-    AND 
-    imid_nhsd""",
-    return_expectations={
-       "incidence": 0.5,
-    },
-  ),
- 
+                                   "tocilizumab_highcostdrugs", "tofacitinib_highcostdrugs", "upadacitinib_highcostdrugs","ustekinumab_highcostdrugs", "vedolizumab_highcostdrugs"),
+
   ## Primary immune deficiencies / HIV/AIDs
   immunosupression_nhsd=comorbidity_snomed(immunosupression_nhsd_codes),
   hiv_aids_nhsd_snomed=comorbidity_snomed(hiv_aids_nhsd_snomed_codes),
@@ -399,61 +455,42 @@ study = StudyDefinition(
                                                   "myasthenia_gravis_nhsd_snomed", "myasthenia_gravis_nhsd_icd10",
                                                   "huntingtons_disease_nhsd_snomed", "huntingtons_disease_nhsd_icd10"),
 
-  ## Eligible // need to reduce eligibility of imids to those withh imid on drug/HCD
-  eligible = patients.maximum_of("downs_syndrome_nhsd", 
+  ## Eligble // need to reduce eligibility of imids to those withh imid on drug/HCD
+  eligble = patients.maximum_of("downs_syndrome_nhsd", 
                                 "cancer_opensafely_snomed", 
                                 "haematological_disease_nhsd",
                                 "ckd_stage_5_nhsd",
                                 "liver_disease_nhsd",
                                 "immunosupression_nhsd",
-                                "imid_on_drug", 
+                                "imid_nhsd", 
                                 "hiv_aids_nhsd",
                                 "solid_organ_transplant_nhsd",
                                 "neurological_disease_nhsd"),
   
 
-  ## TREATMENT - MAB + Antivirals. 
-  sotrovimab=covid_therapeutics("Sotrovimab"),
-  molnupiravir =covid_therapeutics("Molnupiravir"),
-  paxlovid=covid_therapeutics("Paxlovid"),
-  remdesivir=covid_therapeutics("Remdesivir"),
-  casirivimab=covid_therapeutics("Casirivimab and imdevimab"),
-  sotrovimab_not_start= patients.with_covid_therapeutics(
-    with_these_therapeutics = "Sotrovimab", with_these_statuses = ["Treatment Not Started"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.1, "date": {"earliest": "2021-12-16"},},
-  ),
-  molnupiravir_not_start= patients.with_covid_therapeutics(
-    with_these_therapeutics = "Molnupiravir", with_these_statuses = ["Treatment Not Started"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.1, "date": {"earliest": "2021-12-16"},},
-  ),
-  paxlovid_not_start= patients.with_covid_therapeutics(
-    with_these_therapeutics = "Paxlovid", with_these_statuses = ["Treatment Not Started"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.1, "date": {"earliest": "2021-12-16"},},
-  ),
-  sotrovimab_stopped= patients.with_covid_therapeutics(
-    with_these_therapeutics = "Sotrovimab", with_these_statuses = ["Treatment Stopped"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.2, "date": {"earliest": "2021-12-16"},},
-  ),
-  molnupiravir_stopped= patients.with_covid_therapeutics(
-    with_these_therapeutics = "Molnupiravir", with_these_statuses = ["Treatment Stopped"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.2, "date": {"earliest": "2021-12-16"},},
-  ),
-  paxlovid_stopped= patients.with_covid_therapeutics(
-    with_these_therapeutics = "Paxlovid", with_these_statuses = ["Treatment Stopped"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.2, "date": {"earliest": "2021-12-16"},},
-  ),
-  # # sotrovimab_approved=covid_therapeutics_approved("Sotrovimab"),
-  # # molnupiravir_approved=covid_therapeutics_approved("Molnupiravir"),
-  # # paxlovid_approved=covid_therapeutics_approved("Paxlovid"),
-  # # sotrovimab_complete=covid_therapeutics_complete("Sotrovimab"), 
-  # # molnupiravir_complete =covid_therapeutics_complete("Molnupiravir"),
-  # # paxlovid_complete=covid_therapeutics_complete("Paxlovid"),
+  ## TREATMENT - MAB + Antivirals. Either use on_or_after = "index date" or between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"]
+  sotrovimab_covid_therapeutics=covid_therapeutics("Sotrovimab"),
+  molnupiravir_covid_therapeutics =covid_therapeutics("Molnupiravir"),
+  paxlovid_covid_therapeutics=covid_therapeutics("Paxlovid"),
+  remdesivir_covid_therapeutics=covid_therapeutics("Remdesivir"),
+  casirivimab_covid_therapeutics=covid_therapeutics("Casirivimab and imdevimab"),
+  # # sotrovimab_covid_approved=covid_therapeutics_approved("Sotrovimab"),
+  # # molnupiravir_covid_approved=covid_therapeutics_approved("Molnupiravir"),
+  # # paxlovid_covid_approved=covid_therapeutics_approved("Paxlovid"),
+  # # sotrovimab_covid_complete=covid_therapeutics_complete("Sotrovimab"), 
+  # # molnupiravir_covid_complete =covid_therapeutics_complete("Molnupiravir"),
+  # # paxlovid_covid_complete=covid_therapeutics_complete("Paxlovid"),
+  # # sotrovimab_covid_stopped=covid_therapeutics_stopped("Sotrovimab"), 
+  # # molnupiravir_covid_stopped =covid_therapeutics_stopped("Molnupiravir"),
+  # # paxlovid_covid_stopped=covid_therapeutics_stopped("Paxlovid"),
+  # # sotrovimab_covid_covid_not_start=covid_therapeutics_could_not_start("Sotrovimab"), 
+  # # molnupiravir_covid_covid_not_start=covid_therapeutics_could_not_start("Molnupiravir"),
+  # # paxlovid_covid_covid_not_start=covid_therapeutics_could_not_start("Paxlovid"),
   
   ## Date treated
   date_treated = patients.minimum_of(
-    "sotrovimab","paxlovid", "molnupiravir",
+    "sotrovimab_covid_therapeutics","paxlovid_covid_therapeutics", "molnupiravir_covid_therapeutics",
   ),
-  
 
   # DEMOGRAPHIC COVARIATES & COMORBIDITY
   age = patients.age_as_of(
@@ -623,10 +660,8 @@ study = StudyDefinition(
   ae_taste_icd=adverse_outcome_icd(taste_icd_codes),
   ae_rheumatoid_arthritis_snomed=imae_snomed(rheumatoid_arthritis_snowmed),
   ae_rheumatoid_arthritis_icd=imae_icd(rheumatoid_arthritis_icd10),
-  ae_rheumatoid_arthritis = patients.minimum_of("ae_rheumatoid_arthritis_snomed", "ae_rheumatoid_arthritis_icd"),
   ae_SLE_ctv=imae_snomed(SLE_ctv),
   ae_SLE_icd=imae_icd(SLE_icd10), 
-  ae_SLE = patients.minimum_of("ae_SLE_ctv", "ae_SLE_icd"),
   ae_Psoriasis_snomed=imae_snomed(Psoriasis_ctv3),
   ae_Psoriatic_arthritis_snomed=imae_snomed(Psoriatic_arthritis_snomed),
   ae_Ankylosing_Spondylitis_ctv=imae_snomed(Ankylosing_Spondylitis_ctv3),  
