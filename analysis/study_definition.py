@@ -123,7 +123,7 @@ def covid_therapeutics(dx_codelist):
       dx_codelist,
       with_these_indications = "non_hospitalised",
       between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
-      find_last_match_in_period=True,
+      find_first_match_in_period=True,
       returning="date",
       date_format="YYYY-MM-DD",
       return_expectations={
@@ -430,6 +430,14 @@ study = StudyDefinition(
     with_these_therapeutics = "Paxlovid", with_these_statuses = ["Treatment Not Started"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
     find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.1, "date": {"earliest": "2021-12-16"},},
   ),
+  remdesivir_not_start= patients.with_covid_therapeutics(
+    with_these_therapeutics = "Remdesivir", with_these_statuses = ["Treatment Not Started"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.1, "date": {"earliest": "2021-12-16"},},
+  ),
+  casirivimab_not_start= patients.with_covid_therapeutics(
+    with_these_therapeutics = "Casirivimab and imdevimab", with_these_statuses = ["Treatment Not Started"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.1, "date": {"earliest": "2021-12-16"},},
+  ),  
   sotrovimab_stopped= patients.with_covid_therapeutics(
     with_these_therapeutics = "Sotrovimab", with_these_statuses = ["Treatment Stopped"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
     find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.2, "date": {"earliest": "2021-12-16"},},
@@ -442,6 +450,14 @@ study = StudyDefinition(
     with_these_therapeutics = "Paxlovid", with_these_statuses = ["Treatment Stopped"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
     find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.2, "date": {"earliest": "2021-12-16"},},
   ),
+  remdesivir_stopped= patients.with_covid_therapeutics(
+    with_these_therapeutics = "Remdesivir", with_these_statuses = ["Treatment Stopped"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.2, "date": {"earliest": "2021-12-16"},},
+  ),
+  casirivimab_stopped= patients.with_covid_therapeutics(
+    with_these_therapeutics = "Casirivimab and imdevimab", with_these_statuses = ["Treatment Stopped"], with_these_indications = "non_hospitalised", between = ["covid_test_positive_date", "covid_test_positive_date + 5 days"],
+    find_last_match_in_period=True, returning="date", date_format="YYYY-MM-DD", return_expectations={"incidence": 0.2, "date": {"earliest": "2021-12-16"},},
+  ),
   # # sotrovimab_approved=covid_therapeutics_approved("Sotrovimab"),
   # # molnupiravir_approved=covid_therapeutics_approved("Molnupiravir"),
   # # paxlovid_approved=covid_therapeutics_approved("Paxlovid"),
@@ -451,10 +467,9 @@ study = StudyDefinition(
   
   ## Date treated
   date_treated = patients.minimum_of(
-    "sotrovimab","paxlovid", "molnupiravir",
+    "sotrovimab","paxlovid", "molnupiravir", "remdesivir", "casirivimab"
   ),
   
-
   # DEMOGRAPHIC COVARIATES & COMORBIDITY
   age = patients.age_as_of(
     "covid_test_positive_date", return_expectations = {"rate": "universal", "int": {"distribution": "population_ages"}, "incidence" : 0.9},
@@ -623,36 +638,99 @@ study = StudyDefinition(
   ae_taste_icd=adverse_outcome_icd(taste_icd_codes),
   ae_rheumatoid_arthritis_snomed=imae_snomed(rheumatoid_arthritis_snowmed),
   ae_rheumatoid_arthritis_icd=imae_icd(rheumatoid_arthritis_icd10),
-  ae_rheumatoid_arthritis = patients.minimum_of("ae_rheumatoid_arthritis_snomed", "ae_rheumatoid_arthritis_icd"),
   ae_SLE_ctv=imae_snomed(SLE_ctv),
   ae_SLE_icd=imae_icd(SLE_icd10), 
-  ae_SLE = patients.minimum_of("ae_SLE_ctv", "ae_SLE_icd"),
   ae_Psoriasis_snomed=imae_snomed(Psoriasis_ctv3),
   ae_Psoriatic_arthritis_snomed=imae_snomed(Psoriatic_arthritis_snomed),
   ae_Ankylosing_Spondylitis_ctv=imae_snomed(Ankylosing_Spondylitis_ctv3),  
   ae_IBD_snomed=imae_snomed(IBD_ctv3),
-
-  ## 2) ALL SAE INCLUDING COVID [Note need to consider patients admitted for MAB infusion]
+  
+## 2) ALL SAE INCLUDING COVID [Note need to consider patients admitted for MAB infusion]
   all_hosp_date = patients.admitted_to_hospital(
     returning = "date_admitted", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
     between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
     return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
   ), 
+  all_hosp_date0 = patients.admitted_to_hospital(
+    returning = "date_admitted", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    between = ["date_treated", "date_treated"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
+  ), 
+  all_hosp_date1 = patients.admitted_to_hospital(
+    returning = "date_admitted", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    between = ["date_treated + 1 day", "date_treated + 1 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
+  ), 
+  all_hosp_date2 = patients.admitted_to_hospital(
+    returning = "date_admitted", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "date_treated + 2 days", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
+  ), 
+  hosp_discharge_date0 = patients.admitted_to_hospital(
+    returning = "date_discharged", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "all_hosp_date0", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ),
+  hosp_discharge_date1 = patients.admitted_to_hospital(
+    returning = "date_discharged", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "all_hosp_date1", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ),
+  hosp_discharge_date2 = patients.admitted_to_hospital(
+    returning = "date_discharged", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "all_hosp_date2", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ),
   ## all_hosp_cause = patients.admitted_to_hospital(returning = "primary_diagnosis", with_patient_classification = ["1"], between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, return_expectations=list, ), 
-
+  # BANG - should i remove admission method?
   covid_hosp_date = patients.admitted_to_hospital(
     returning = "date_admitted", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
     between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
     return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
-  ),  
-  emerg_covid_hosp_date = patients.admitted_to_hospital(
+  ), 
+  covid_hosp_date0 = patients.admitted_to_hospital(
     returning = "date_admitted", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
-    between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    between = ["date_treated", "date_treated"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
     return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
-  ),  
-  covid_hosp_date_mabs_procedure = patients.admitted_to_hospital(
-    returning = "date_admitted", with_patient_classification = ["1"], with_these_procedures=mabs_procedure_codes, 
-    between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+  ), 
+  covid_hosp_date1 = patients.admitted_to_hospital(
+    returning = "date_admitted", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    between = ["date_treated + 1 day", "date_treated + 1 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ), 
+  covid_hosp_date2 = patients.admitted_to_hospital(
+    returning = "date_admitted", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "date_treated + 2 days", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ), 
+  covid_discharge_date0 = patients.admitted_to_hospital(
+    returning = "date_discharged", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "covid_hosp_date0", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ),
+  covid_discharge_date1 = patients.admitted_to_hospital(
+    returning = "date_discharged", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "covid_hosp_date1", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ),
+  covid_discharge_date2 = patients.admitted_to_hospital(
+    returning = "date_discharged", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "covid_hosp_date2", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ),
+  covid_hosp_date_mabs = patients.admitted_to_hospital(
+    returning = "date_admitted", with_these_primary_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_these_procedures=mabs_procedure_codes, 
+    on_or_after = "date_treated", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
+  ),
+  covid_hosp_date_mabs_not_primary = patients.admitted_to_hospital(
+    returning = "date_admitted", with_these_diagnoses = covid_icd10_codes, with_patient_classification = ["1"], with_these_procedures=mabs_procedure_codes, 
+    on_or_after ="date_treated", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
+  ),
+  covid_hosp_date_mabs_day = patients.admitted_to_hospital(
+    returning = "date_admitted", with_these_primary_diagnoses = covid_icd10_codes, with_these_procedures=mabs_procedure_codes, 
+    on_or_after = "date_treated", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
     return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
   ),
   died_date_ons=patients.died_from_any_cause(
@@ -660,11 +738,13 @@ study = StudyDefinition(
     between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], date_format = "YYYY-MM-DD",
     return_expectations = {"date": {"earliest": "2021-01-01", "latest" : "today"}, "rate": "uniform","incidence": 0.6},
   ),  
-  # # death_code = patients.died_from_any_cause(returning = "underlying_cause_of_death", between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"]),
-
   died_ons_covid=patients.with_these_codes_on_death_certificate(
     covid_icd10_codes, returning="date_of_death",       
     between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], date_format = "YYYY-MM-DD",  match_only_underlying_cause=True,
     return_expectations = {"date": {"earliest": "2021-01-01", "latest" : "today"}, "rate": "uniform", "incidence": 0.6},
   ),
+  # # hospitalisation_primary_code0 = patients.admitted_to_hospital(returning = "primary_diagnosis", with_patient_classification = ["1"], between = ["date_treated + 1 day", "date_treated + 1 day"], find_first_match_in_period = True,),
+  # # hospitalisation_primary_code1 = patients.admitted_to_hospital(returning = "primary_diagnosis", with_patient_classification = ["1"], between = ["date_treated", "date_treated"], find_first_match_in_period = True,),
+  # # hospitalisation_primary_code2 = patients.admitted_to_hospital(returning = "primary_diagnosis", with_patient_classification = ["1"], on_or_after = "start_date + 2 days", find_first_match_in_period = True,),
+  # # death_code = patients.died_from_any_cause(returning = "underlying_cause_of_death", between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"]),
 )

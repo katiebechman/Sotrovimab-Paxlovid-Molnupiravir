@@ -1,14 +1,17 @@
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\k1635179\OneDrive - King's College London\Katie\OpenSAFELY\Sotrovimab-Paxlovid-Molnupiravir/logs/cleaning_dataset.log
+       log:  C:\Users\k1635179\OneDrive - King's Co
+> llege London\Katie\OpenSAFELY\Sotrovimab-Paxlovid
+> -Molnupiravir/logs/cleaning_dataset.log
   log type:  text
- opened on:  16 Feb 2023, 13:11:47
+ opened on:  16 Mar 2023, 15:28:05
 
 . 
 . * import dataset
-. import delimited "$projectdir/output/input.csv", clear
+. import delimited "$projectdir/output/input.csv", 
+> clear
 (encoding automatically selected: ISO-8859-1)
-(143 vars, 50,000 obs)
+(152 vars, 500,000 obs)
 
 . 
 . *Set Ado file path
@@ -22,74 +25,8 @@
   [7]              "C:\Users\k1635179\OneDrive - King's College London\Katie\OpenSAFELY\Sotrovimab-Paxlovid-Molnupiravir/analysis/extra_ados"
 
 . 
-. //describe
-. //codebook
-. 
-. *  Convert strings to dates  *
-. foreach var of varlist   covid_test_positive_date                               ///
->                                                  covid_test_positive_date2                              ///
->                                                  covid_symptoms_snomed                                  ///     
->                                                  prior_covid_date                                       ///
->                                                  downs_syndrome_nhsd                                    ///
->                                                  cancer_opensafely_snomed                               ///
->                                                  haematological_disease_nhsd                    ///
->                                                  liver_disease_nhsd                                             ///
->                                                  imid_nhsd                                                              ///
->                                                  imid_drug                                                              ///
->                                                  immunosupression_nhsd                                  ///
->                                                  hiv_aids_nhsd                                                  ///
->                                                  neurological_disease_nhsd                              ///
->                                                  eligble                                                                ///
->                                                  sotrovimab_covid_therapeutics                  ///
->                                                  molnupiravir_covid_therapeutics                /// 
->                                                  paxlovid_covid_therapeutics                    ///
->                                                  remdesivir_covid_therapeutics                  ///
->                                                  casirivimab_covid_therapeutics                 ///
->                                                  date_treated                                                   ///
->                                                  last_vaccination_date                                  ///
->                                                  diabetes                                                               ///
->                                                  chronic_cardiac_disease                                ///
->                                                  hypertension                                                   ///
->                                                  chronic_respiratory_disease                    ///
->                                                  death_date                                                             ///
->                                                  dereg_date                                                     ///
->                                                  covid_hosp_discharge                                   ///
->                                                  any_covid_hosp_discharge                               ///                     
->                                                  ae_diverticulitis_icd                                  ///
->                                                  ae_diverticulitis_snomed                               ///
->                                              ae_diarrhoea_snomed                                        ///
->                                                  ae_taste_snomed                                                ///
->                                                  ae_taste_icd                                                   ///
->                                                  ae_rheumatoid_arthritis_snomed                 ///
->                                                  ae_rheumatoid_arthritis_icd                    ///
->                                                  ae_sle_ctv                                                             ///
->                                                  ae_sle_icd                                                             ///
->                                                  ae_psoriasis_snomed                                    ///
->                                                  ae_psoriatic_arthritis_snomed                  ///
->                                                  ae_ankylosing_spondylitis_ctv                  ///
->                                                  ae_ibd_snomed                                                  ///
->                                                  all_hosp_date                                                  ///
->                                                  covid_hosp_date                                                ///
->                                                  emerg_covid_hosp_date                                  ///
->                                                  covid_hosp_date_mabs_procedure                 ///
->                                                  died_date_ons                                                  ///
->                                                  died_ons_covid                                                 ///
->                                                  {                                       
-  2.         capture confirm string variable `var'
-  3.         if _rc==0 {
-  4.         rename `var' a
-  5.         gen `var' = date(a, "YMD")
-  6.         drop a
-  7.         format %td `var'
-  8.  }
-  9. }
-variable downs_syndrome_nhsd not found
-r(111);
-
 end of do-file
 
-r(111);
-
-. clear
+. br
 
 . exit, clear
