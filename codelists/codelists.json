@@ -647,6 +647,78 @@
       "url": "https://codelists.opensafely.org/codelist/user/katiebechman/abnormal-taste-icd10/73eb1a29/",
       "downloaded_at": "2023-02-09 09:51:10.125446Z",
       "sha": "0bd7122422b1ab7ea734930a32e24ca370d91a01"
+    },
+    "opensafely-dialysis.csv": {
+      "id": "opensafely/dialysis/3ce108ac",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/dialysis/3ce108ac/",
+      "downloaded_at": "2023-04-06 10:42:10.545463Z",
+      "sha": "ace47eee209d55a7506e60e7e664f8e75ad9848c"
+    },
+    "opensafely-kidney-transplant.csv": {
+      "id": "opensafely/kidney-transplant/2020-07-15",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/kidney-transplant/2020-07-15/",
+      "downloaded_at": "2023-04-06 10:42:10.719261Z",
+      "sha": "db6b47d17273b563cb428e4a97a7ba8b6d62afa9"
+    },
+    "user-Louis-ckd-stage.csv": {
+      "id": "user/Louis/ckd-stage/77b93e93",
+      "url": "https://codelists.opensafely.org/codelist/user/Louis/ckd-stage/77b93e93/",
+      "downloaded_at": "2023-04-06 10:42:10.881326Z",
+      "sha": "c5be45339cd50ef9fa91186273707e17ded06d0d"
+    },
+    "opensafely-renal-replacement-therapy.csv": {
+      "id": "opensafely/renal-replacement-therapy/2020-04-14",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/renal-replacement-therapy/2020-04-14/",
+      "downloaded_at": "2023-04-06 10:42:11.049143Z",
+      "sha": "08e003f1222fe26781288b2eeff22db99780f202"
+    },
+    "user-viyaasan-kidney-transplant-opcs-4.csv": {
+      "id": "user/viyaasan/kidney-transplant-opcs-4/18d788ae",
+      "url": "https://codelists.opensafely.org/codelist/user/viyaasan/kidney-transplant-opcs-4/18d788ae/",
+      "downloaded_at": "2023-04-06 10:42:11.232048Z",
+      "sha": "fa7f3a5b2e22928038efd8d8795f753a9051625b"
+    },
+    "user-bangzheng-creatinine-value-shortlist.csv": {
+      "id": "user/bangzheng/creatinine-value-shortlist/60eb1411",
+      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/creatinine-value-shortlist/60eb1411/",
+      "downloaded_at": "2023-04-06 10:42:11.435960Z",
+      "sha": "224052741a393be65aaec9340fa20e9785871ff7"
+    },
+    "user-bangzheng-creatinine-value.csv": {
+      "id": "user/bangzheng/creatinine-value/58285b97",
+      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/creatinine-value/58285b97/",
+      "downloaded_at": "2023-04-06 10:42:11.637756Z",
+      "sha": "8b086a28dbf3af1fee7c44352533f9f99383909a"
+    },
+    "user-bangzheng-egfr-value-shortlist.csv": {
+      "id": "user/bangzheng/egfr-value-shortlist/1d0e46c5",
+      "url": "https://codelists.opensafely.org/codelist/user/bangzheng/egfr-value-shortlist/1d0e46c5/",
+      "downloaded_at": "2023-04-06 10:42:11.861591Z",
+      "sha": "3c78d2bc81b5c9bbb913966999ef86f37f1eafa1"
+    },
+    "user-ss808-estimated-glomerular-filtration-rate-egfr-values.csv": {
+      "id": "user/ss808/estimated-glomerular-filtration-rate-egfr-values/5d974480",
+      "url": "https://codelists.opensafely.org/codelist/user/ss808/estimated-glomerular-filtration-rate-egfr-values/5d974480/",
+      "downloaded_at": "2023-04-06 10:42:12.098595Z",
+      "sha": "8c153aae62a3c7cf196cfe066f1e63123ce4ce99"
+    },
+    "primis-covid19-vacc-uptake-ckd35.csv": {
+      "id": "primis-covid19-vacc-uptake/ckd35/v.1.5.3",
+      "url": "https://codelists.opensafely.org/codelist/primis-covid19-vacc-uptake/ckd35/v.1.5.3/",
+      "downloaded_at": "2023-04-06 10:53:41.934314Z",
+      "sha": "2e2e33d85817844bb8922fc6c87583c898f61ec5"
+    },
+    "opensafely-sps-paxlovid-interactions-do-not-use.csv": {
+      "id": "opensafely/sps-paxlovid-interactions-do-not-use/58f87823",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/sps-paxlovid-interactions-do-not-use/58f87823/",
+      "downloaded_at": "2023-04-06 12:15:17.695354Z",
+      "sha": "f856f0bffa2b8ff05e2bcb245a77e268453db52b"
+    },
+    "opensafely-nirmatrelvir-drug-interactions.csv": {
+      "id": "opensafely/nirmatrelvir-drug-interactions/3d3644f8",
+      "url": "https://codelists.opensafely.org/codelist/opensafely/nirmatrelvir-drug-interactions/3d3644f8/",
+      "downloaded_at": "2023-04-06 13:54:01.541500Z",
+      "sha": "e35b126fdea30ebaebe70ba70f1010e5d4e7cdc4"
     }
   }
 }

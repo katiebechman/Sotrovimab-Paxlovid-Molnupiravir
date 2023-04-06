@@ -125,9 +125,40 @@ haematological_malignancies_nhsd_icd10_codes = codelist_from_csv(
 ckd_stage_5_nhsd_snomed_codes = codelist_from_csv(
   "codelists/nhsd-ckd-stage-5-snomed-ct.csv",   system = "snomed",   column = "code"
 )
-
 ckd_stage_5_nhsd_icd10_codes = codelist_from_csv(
   "codelists/nhsd-ckd-stage-5-icd-10.csv",   system = "icd10",   column = "code"
+)
+dialysis_codes_ctv = codelist_from_csv(
+  "codelists/opensafely-dialysis.csv", system = "ctv3", column = "CTV3ID"
+)
+RRT_codelist_ctv = codelist_from_csv(
+    "codelists/opensafely-renal-replacement-therapy.csv", system="ctv3", column="CTV3ID"
+)
+kidney_transplant_codes_ctv = codelist_from_csv(
+  "codelists/opensafely-kidney-transplant.csv", system = "ctv3", column = "CTV3ID"
+)
+kidney_tx_opcs4_codelist = codelist_from_csv(
+  "codelists/user-viyaasan-kidney-transplant-opcs-4.csv",  system="opcs4",  column="code"
+)
+kidney_tx_icd10_codelist=codelist(["Z940"], system="icd10"
+)
+##dialysis_icd10_codelist = codelist_from_csv("codelists/ukrr-dialysis.csv", system="icd10", column="code")
+##dialysis_opcs4_codelist = codelist_from_csv("codelists/ukrr-dialysis-opcs-4.csv", system="opcs4",column="code")
+
+#### Creatine and eGFR
+creatinine_codes_ctv3 = codelist(["XE2q5"], system="ctv3"
+)
+creatinine_codes_snomed = codelist_from_csv(
+  "codelists/user-bangzheng-creatinine-value.csv", system="snomed", column="code"
+)
+creatinine_codes_short_snomed = codelist_from_csv(
+    "codelists/user-bangzheng-creatinine-value-shortlist.csv", system="snomed", column="code"
+)
+eGFR_level_codelist = codelist_from_csv(
+    "codelists/user-ss808-estimated-glomerular-filtration-rate-egfr-values.csv",   system="snomed",  column="code",
+)
+eGFR_short_level_codelist = codelist_from_csv(
+    "codelists/user-bangzheng-egfr-value-shortlist.csv",  system="snomed",  column="code",
 )
 
 ### Patients with liver disease
@@ -398,30 +429,29 @@ wider_ld_primis_snomed_codes = codelist_from_csv(
 ## Shielded
 high_risk_primis_snomed_codes = codelist_from_csv(
     "codelists/primis-covid19-vacc-uptake-shield.csv",     system = "snomed",     column = "code")
-
 not_high_risk_primis_snomed_codes = codelist_from_csv(
-    "codelists/primis-covid19-vacc-uptake-nonshield.csv",     system = "snomed",     column = "code")
-    
+    "codelists/primis-covid19-vacc-uptake-nonshield.csv",     system = "snomed",     column = "code") 
 ## Serious mental illness
 serious_mental_illness_nhsd_snomed_codes = codelist_from_csv(
   "codelists/nhsd-primary-care-domain-refsets-mh_cod.csv",  system = "snomed",  column = "code",
 )
-    
-
 ## Vaccination declined
 first_dose_declined = codelist_from_csv(
   "codelists/opensafely-covid-19-vaccination-first-dose-declined.csv",  system = "snomed",  column = "code",
 )
-
 second_dose_declined = codelist_from_csv(
   "codelists/opensafely-covid-19-vaccination-second-dose-declined.csv",  system = "snomed",  column = "code",
 )
-
 covid_vaccine_declined_codes = combine_codelists(
   first_dose_declined, second_dose_declined
 )
-
-
+# Paxlovid interactions
+drugs_do_not_use_codes = codelist_from_csv(
+  "codelists/opensafely-sps-paxlovid-interactions-do-not-use.csv",  system = "snomed", column = "code"
+)
+drugs_consider_risk_codes = codelist_from_csv(
+  "codelists/opensafely-nirmatrelvir-drug-interactions.csv",  system = "snomed", column = "code"
+)
 ## Outcomes  ---- Pre-specified adverse drug reactions and AESIs
 
 ### Pre-specified adverse drug reactions

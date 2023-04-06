@@ -106,3 +106,15 @@ opensafely/high-cost-drugs-vedolizumab/7f1d1179
 opensafely/symptoms-diarrhoea/7b4f7876
 user/katiebechman/abnormal-taste/0cfa8d5f/
 user/katiebechman/abnormal-taste-icd10/73eb1a29/
+opensafely/dialysis/3ce108ac
+opensafely/kidney-transplant/2020-07-15
+user/Louis/ckd-stage/77b93e93/
+opensafely/renal-replacement-therapy/2020-04-14
+user/viyaasan/kidney-transplant-opcs-4/18d788ae/
+user/bangzheng/creatinine-value-shortlist/60eb1411
+user/bangzheng/creatinine-value/58285b97
+user/bangzheng/egfr-value-shortlist/1d0e46c5
+user/ss808/estimated-glomerular-filtration-rate-egfr-values/5d974480
+primis-covid19-vacc-uptake/ckd35/v.1.5.3
+opensafely/sps-paxlovid-interactions-do-not-use/58f87823
+opensafely/nirmatrelvir-drug-interactions/3d3644f8

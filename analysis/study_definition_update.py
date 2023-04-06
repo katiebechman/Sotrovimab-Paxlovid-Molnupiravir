@@ -942,18 +942,27 @@ study = StudyDefinition(
           "Downs syndrome": 0.1,
           "sickle cell disease": 0.1,
           "solid cancer": 0.1,
-          "haematological diseases,stem cell transplant recipients": 0.1,
-          "renal disease,sickle cell disease": 0.1,
+          "haematological diseases": 0.1,
+          "renal disease": 0.1,
           "liver disease": 0.05,
           "IMID": 0.1,
-          "IMID,solid cancer": 0.1,
+          "solid cancer": 0.1,
           "haematological malignancies": 0.05,
           "primary immune deficiencies": 0.1,
           "HIV or AIDS": 0.05,
           "NA":0.05,},},
     },
   ),
-  
+  eligible_binary= patients.satisfying(
+    """
+    eligible 
+    OR
+    high_risk_cohort_covid_therapeutics
+    """,
+    return_expectations={
+       "incidence": 0.5,
+    },
+  ),
   ## Down's syndrome
   downs_syndrome_nhsd_snomed = patients.with_these_clinical_events(
     downs_syndrome_nhsd_snomed_codes,
