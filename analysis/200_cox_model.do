@@ -24,376 +24,150 @@ di "$logdir"
 cap log close
 log using "$logdir/cleaning_dataset.log", replace
 
-* import dataset
-import delimited "$projectdir/output/input.csv", clear
-
 *Set Ado file path
 adopath + "$projectdir/analysis/extra_ados"
 
-
-/* SET Index date ===========================================================*/
+* SET Index date 
 global indexdate 			= "01/03/2020"
 
-* Event
-foreach var of varlist ae_spc* ae_imae* ae_all* covid_hosp_date all_hosp_date{
-				display "`var'"
-				by drug, sort: count if `var'!=. 
-}
-foreach var of varlist ae_spc_all ae_imae_all ae_all covid_hosp_date all_hosp_date{
-				gen fail_`var' = `var'
-} 
- 	
- 
-	*generate censor date
-	gen diecensor = mdy(10,01,2020)
-	format diecensor %td
-	
-	egen stopdied = rmin(died_ons_date diecensor)
-	egen stopicu = rmin(icu_or_death_covid_date diecensor)
-	egen stopswab = rmin(first_pos_test_sgss_date diecensor)
+use "$projectdir/output/data/main", clear
 
+/* 
+===========================================================*/
 
-	
-	gen exitdied = died_ons_covid_flag_any
-	gen exiticu = icu_or_death_covid
-	gen exitswab = first_pos_test_sgss 
-
-
-
- 
-
-gen event_date=ae_all
-by drug, sort: count if event_date!=.
-by drug, sort:  count if event_date<start_date & event_date!=.
-drop if event_date<start_date & event_date!=. & drug==0 // REMOVE control from control group if event occurs before 'treatment start'
-* Failure - if event occurs before end date or second drug initiation 
-foreach var of varlist
-gen failure = (event_date!=. & event_date<= min(study_end_date, start_date_29, paxlovid_date_started, molnupiravir_date_started, remdesivir_date_started, casirivimab_date_started)) if drug==1
-replace failure = (event_date!=. & event_date<= min(study_end_date, start_date_29, sotrovimab_date_started, molnupiravir_date_started, remdesivir_date_started, casirivimab_date_started)) if drug==2
-replace failure = (event_date!=. & event_date<= min(study_end_date, start_date_29, sotrovimab_date_started, paxlovid_date_started, remdesivir_date_started, casirivimab_date_started)) if drug==3
-replace failure = (event_date!=. & event_date<= min(study_end_date, start_date_29, sotrovimab_date_started, paxlovid_date_started, molnupiravir_date_started, remdesivir_date_started, casirivimab_date_started)) if drug==0
-tab drug failure, m
-// Censoring
-gen end_date=event_date if failure==1
-replace end_date=min(death_date, dereg_date, study_end_date, start_date_29, paxlovid_date_started, molnupiravir_date_started, remdesivir_date_started, casirivimab_date_started) if failure==0&drug==1
-replace end_date=min(death_date, dereg_date, study_end_date, start_date_29, sotrovimab_date_started, molnupiravir_date_started, remdesivir_date_started, casirivimab_date_started) if failure==0&drug==2
-replace end_date=min(death_date, dereg_date, study_end_date, start_date_29, sotrovimab_date_started, paxlovid_date_started, remdesivir_date_started, casirivimab_date_started) if failure==0&drug==3
-replace end_date=min(death_date, dereg_date, study_end_date, start_date_29, sotrovimab_date_started, paxlovid_date_started, molnupiravir_date_started, remdesivir_date_started, casirivimab_date_started) if failure==0&drug==0
-format %td event_date end_date study_end_date start_date_29
-
-
-/* SET Index date ===========================================================*/
-global crude
-global agesex i.agegroup male
-global adjusted_main i.agegroup male i.ethnicity i.imd bmicat bowel skin joint chronic_cardiac_disease cancer stroke i.diabcat steroidcat 
-global adjusted_extra i.agegroup male i.ethnicity i.imd bmicat bowel skin joint chronic_cardiac_disease cancer stroke i.diabcat steroidcat i.ckd chronic_liver_disease chronic_respiratory_disease
+* Models
+global crude 	i.drug 
+global agesex 	i.drug age i.sex
+global adj 		i.drug age i.sex i.region_nhs drugs_consider_risk_contra ///
+			    downs_syndrome solid_cancer haem_disease renal_disease liver_disease imid_on_drug immunosupression hiv_aids solid_organ rare_neuro  
+global fulladj1 i.drug age i.sex i.region_nhs drugs_consider_risk_contra ///
+			    downs_syndrome solid_cancer haem_disease renal_disease liver_disease imid_on_drug immunosupression hiv_aids solid_organ rare_neuro  ///
+				vaccination_status imd White 
+global fulladj2 i.drug age i.sex i.region_nhs drugs_consider_risk_contra ///
+			    downs_syndrome solid_cancer haem_disease renal_disease liver_disease imid_on_drug immunosupression hiv_aids solid_organ rare_neuro  ///
+				vaccination_status imd White 1b.bmi_group diabetes chronic_cardiac_disease chronic_respiratory_disease hypertension
+/* Alternative models
+1. age = age Vs 5y band V spline			
+2. missing values as a seperate category for ethnicity, IMD, BMI 
+global fulladj_miss 	i.drug age i.sex i.region_nhs drugs_consider_risk_contra ///
+						downs_syndrome solid_cancer haem_disease renal_disease liver_disease imid_on_drug immunosupression hiv_aids solid_organ rare_neuro  ///
+						vaccination_status imd_with_missing White_with_missing 1b.bmi_group_with_missing diabetes chronic_cardiac_disease chronic_respiratory_disease hypertension
+3. Strata via NHS region
+stcox i.drug age i.sex, strata(region_nhs)
+*/
+	   
 tempname coxoutput
-	postfile `coxoutput' str20(cohort) str20(model) str20(failure) ///
-		ptime_exposed events_exposed rate_exposed /// 
-		ptime_comparator events_comparator rate_comparator hr lc uc ///
-		using $projectdir/output/data/cox_model_summary, replace						
-
-use $projectdir/output/data/file_`f', replace
-
-
-	 
-
-	foreach fail in died icu swab {
-
-		stset stop`fail', id(patient_id) failure(fail`fail'==1) origin(time enter_date)  enter(time enter_date) scale(365.25) 
+postfile `coxoutput' str20(model) str20(failure) ///
+	ptime_all events_all rate_all /// 
+	ptime_control events_control rate_control /// 
+	ptime_sot events_sot rate_sot ///
+	ptime_pax events_pax rate_pax ///
+	ptime_mol events_mol rate_mol ///
+	hr_sot lc_sot uc_sot hr_pax lc_pax uc_pax hr_mol lc_mol uc_mol ///
+	using "$projectdir/output/tables/cox_model_summary", replace	
 						
-		foreach model in crude agesex adjusted_main adjusted_extra {
+foreach fail in ae_diverticulitis_snomed new_ae_ra_snomed ae_all covid_hosp all_hosp died {
+
+	stset stop_`fail', id(patient_id) origin(time start_date) enter(time start_date) failure(fail_`fail'==1) 
+						
+	foreach model in crude agesex adj fulladj1 fulladj2{
 				
-			stcox `f' $`model', vce(robust)
-						matrix b = r(table)
-						local hr = b[1,1]
-						local lc = b[5,1]
-						local uc = b[6,1]
-
-			stptime if `f' == 1
-						local rate_exposed = `r(rate)'
-						local ptime_exposed = `r(ptime)'
-						local events_exposed .
-						if `r(failures)' == 0 | `r(failures)' > 5 local events_exposed `r(failures)'
+		stcox $`model', vce(robust)
+					matrix b = r(table)
+					local hr_sot = b[1,2]
+					local lc_sot = b[5,2]
+					local uc_sot = b[6,2]
+					local hr_pax = b[1,3]
+					local lc_pax = b[5,3]
+					local uc_pax = b[6,3]
+					local hr_mol = b[1,4]
+					local lc_mol = b[5,4]
+					local uc_mol = b[6,4]
+		// estat phtest,de
+		stptime 
+					local rate_all = `r(rate)'
+					local ptime_all = `r(ptime)'
+					local events_all .
+						if `r(failures)' == 0 | `r(failures)' > 5 local events_all `r(failures)'
+		
+		stptime if drug == 0
+					local rate_control = `r(rate)'
+					local ptime_control = `r(ptime)'
+					local events_control .
+						if `r(failures)' == 0 | `r(failures)' > 5 local events_control `r(failures)'
+		
+		stptime if drug == 1
+					local rate_sot = `r(rate)'
+					local ptime_sot = `r(ptime)'
+					local events_sot .
+						if `r(failures)' == 0 | `r(failures)' > 5 local events_sot `r(failures)'
+		
+		stptime if drug == 2
+					local rate_pax = `r(rate)'
+					local ptime_pax = `r(ptime)'
+					local events_pax .
+						if `r(failures)' == 0 | `r(failures)' > 5 local events_pax `r(failures)'
+		
+		stptime if drug == 3
+					local rate_mol = `r(rate)'
+					local ptime_mol = `r(ptime)'
+					local events_mol .
+						if `r(failures)' == 0 | `r(failures)' > 5 local events_mol `r(failures)'
 						
-			stptime if `f' == 0
-						local rate_comparator = `r(rate)'
-						local ptime_comparator = `r(ptime)'
-						local events_comparator .
-						if `r(failures)' == 0 | `r(failures)' > 5 local events_comparator `r(failures)'
-
-			post `coxoutput' ("`f'") ("`model'") ("`fail'") (`ptime_exposed') (`events_exposed') (`rate_exposed') ///
-						(`ptime_comparator') (`events_comparator') (`rate_comparator') ///
-						(`hr') (`lc') (`uc')
-		}
-	}
+		post `coxoutput' ("`model'") ("`fail'") (`ptime_all') (`events_all') (`rate_all') ///
+					(`ptime_control') (`events_control') (`rate_control') ///
+					(`ptime_sot') (`events_sot') (`rate_sot') ///
+					(`ptime_pax') (`events_pax') (`rate_pax') ///
+					(`ptime_mol') (`events_mol') (`rate_mol') ///
+					(`hr_sot') (`lc_sot') (`uc_sot') (`hr_pax') (`lc_pax') (`uc_pax') (`hr_mol') (`lc_mol') (`uc_mol')
+					
+}
 }
 
 postclose `coxoutput'
+   
+foreach fail in ae_diverticulitis_snomed new_ae_ra_snomed ae_all covid_hosp all_hosp died {
+
+	stset stop_`fail', id(patient_id) origin(time start_date) enter(time start_date) failure(fail_`fail'==1) 
+								
+			stcox i.drug 
+			sts graph, by(drug) tmax(28) ylabel(0(0.25)1) ylabel(,format(%4.3f)) xlabel(0(7)28) ///
+			risktable(,title(" ")order(1 "Control     " 2 "Sotrovimab     " 3 "Paxlovid     " 4 "Molnupiravir     ") ///
+			size(small)justification(left) rowtitle(,size(small)justification(right))) ///
+			legend(order(1 "Control" 2 "Sotrovimab" 3 "Paxlovid" 4 "Molnupiravir") symxsize(*0.4) size(small)) ///
+			xtitle("Analysis time (years)") ylabel(,angle(horizontal)) plotregion(color(white)) graphregion(color(white)) ///
+			ytitle("Survival Probability" ) xtitle("Time (Days)") saving("$projectdir/output/figures/survrisk_`fail'", replace)
+
+			graph export "$projectdir/output/figures/survrisk_`fail'.svg", as(svg) replace
+			
+			stcurve, haz kernel(epan2) at1(drug=0) at2(drug=1) at3(drug=2) at4(drug=3) ///
+			title("") range(0 28) xtitle("Analysis time (years)") ///
+			legend(order(1 "Control" 2 "Sotrovimab" 3 "Paxlovid" 4 "Molnupiravir") symxsize(*0.4) size(small)) ///
+			ylabel(,angle(horizontal)) plotregion(color(white)) graphregion(color(white)) ///
+			ytitle("Survival Probability" ) xtitle("Time (Days)") saving("$projectdir/output/figures/survhaz_`fail'", replace)
+				
+			graph export "$projectdir/output/figures/survhaz_`fail'.svg", as(svg) replace
+			
+			stcurve, survival at1(drug=0) at2(drug=1) at3(drug=2) at4(drug=3) title("") ///
+			range(0 28) xtitle("Analysis time (years)") ///
+			legend(order(1 "Control" 2 "Sotrovimab" 3 "Paxlovid" 4 "Molnupiravir") symxsize(*0.4) size(small)) ///
+			ylabel(,angle(horizontal)) plotregion(color(white)) graphregion(color(white)) ///
+			ytitle("Survival Probability" ) xtitle("Time (Days)") saving("$projectdir/output/figures/survcurve_`fail'", replace)
+	
+			graph export "$projectdir/output/figures/survcurve_`fail'.svg", as(svg) replace
+}
+
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+
+		
+		
+	
 
 
 
-
-log close
-
-
-
-* Follow-up time
-gen study_end_date=mdy(01,08,2023)
-gen start_date_29=start_date+28
-stset end_date, origin(start_date) failure(failure==1)
-stcox i.drug
-
-gen event_date_allcause=min( death_date, hospitalisation_outcome_date,covid_hospitalisation_outcome_da )
-gen failure_allcause=(event_date_allcause!=.&event_date_allcause<=min(study_end_date,start_date_29,sotrovimab_covid_therapeutics,paxlovid_covid_therapeutics,remdesivir_covid_therapeutics,casirivimab_covid_therapeutics)) if drug==1
-replace failure_allcause=(event_date_allcause!=.&event_date_allcause<=min(study_end_date,start_date_29,sotrovimab_covid_therapeutics,molnupiravir_covid_therapeutics,remdesivir_covid_therapeutics,casirivimab_covid_therapeutics)) if drug==0
-tab failure_allcause,m
-gen end_date_allcause=event_date_allcause if failure_allcause==1
-replace end_date_allcause=min(death_date, dereg_date, study_end_date, start_date_29,sotrovimab_covid_therapeutics,paxlovid_covid_therapeutics,remdesivir_covid_therapeutics,casirivimab_covid_therapeutics,hosp_date_day_cases) if failure_allcause==0&drug==1
-replace end_date_allcause=min(death_date, dereg_date, study_end_date, start_date_29,sotrovimab_covid_therapeutics,molnupiravir_covid_therapeutics,remdesivir_covid_therapeutics,casirivimab_covid_therapeutics,hosp_date_day_cases) if failure_allcause==0&drug==0
-format %td event_date_allcause end_date_allcause  
-
-stset end_date_allcause ,  origin(start_date) failure(failure_allcause==1)
-stcox drug
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*descriptives by drug groups*
-by drug,sort: sum age,de
-ttest age , by( drug )
-by drug,sort: sum bmi,de
-ttest bmi, by( drug )
-sum d_postest_treat ,de
-by drug,sort: sum d_postest_treat ,de
-ttest d_postest_treat , by( drug )
-ranksum d_postest_treat,by(drug)
-sum week_after_campaign,de
-by drug,sort: sum week_after_campaign,de
-ttest week_after_campaign , by( drug )
-ranksum week_after_campaign,by(drug)
-sum week_after_vaccinate,de
-by drug,sort: sum week_after_vaccinate,de
-ttest week_after_vaccinate , by( drug )
-ranksum week_after_vaccinate,by(drug)
-sum d_vaccinate_treat,de
-by drug,sort: sum d_vaccinate_treat,de
-ttest d_vaccinate_treat , by( drug )
-ranksum d_vaccinate_treat,by(drug)
-
-tab drug sex,row chi
-tab drug ethnicity,row chi
-tab drug White,row chi
-tab drug imd,row chi
-ranksum imd,by(drug)
-tab drug rural_urban,row chi
-ranksum rural_urban,by(drug)
-tab drug region_nhs,row chi
-tab drug region_covid_therapeutics,row chi
-*need to address the error of "too many values"*
-tab stp if drug==0
-tab stp if drug==1
-tab drug age_group3 ,row chi
-tab drug d_postest_treat_g2 ,row chi
-tab drug d_postest_treat ,row
-tab drug downs_syndrome ,row chi
-tab drug solid_cancer ,row chi
-tab drug solid_cancer_new ,row chi
-tab drug haema_disease ,row chi
-tab drug renal_disease ,row chi
-tab drug liver_disease ,row chi
-tab drug imid ,row chi
-tab drug immunosupression ,row chi
-tab drug immunosupression_new ,row chi
-tab drug hiv_aids ,row chi
-tab drug solid_organ ,row chi
-tab drug solid_organ_new ,row chi
-tab drug rare_neuro ,row chi
-tab drug high_risk_group ,row chi
-tab drug high_risk_group_new ,row chi
-tab drug autism_nhsd ,row chi
-tab drug care_home_primis ,row chi
-tab drug dementia_nhsd ,row chi
-tab drug housebound_opensafely ,row chi
-tab drug learning_disability_primis ,row chi
-tab drug serious_mental_illness_nhsd ,row chi
-tab drug bmi_group4 ,row chi
-tab drug bmi_g3 ,row chi
-tab drug diabetes ,row chi
-tab drug chronic_cardiac_disease ,row chi
-tab drug hypertension ,row chi
-tab drug chronic_respiratory_disease ,row chi
-tab drug vaccination_status ,row chi
-tab drug month_after_vaccinate,row chi
-tab drug sgtf ,row chi
-tab drug sgtf_new ,row chi
-tab drug drugs_consider_risk_contra,row chi
-*tab drug variant_recorded ,row chi
-tab drug if covid_test_positive_pre_date!=.
-stset end_date ,  origin(start_date) failure(failure==1)
-stcox drug
-*check treatment status*
-count if drug==0&paxlovid_covid_therapeutics==paxlovid_covid_approved
-count if drug==0&paxlovid_covid_therapeutics==paxlovid_covid_complete
-count if drug==0&paxlovid_covid_therapeutics==paxlovid_covid_not_start
-count if drug==0&paxlovid_covid_therapeutics==paxlovid_covid_stopped
-count if drug==0&paxlovid_covid_approved!=.
-count if drug==0&paxlovid_covid_complete!=.
-count if drug==0&paxlovid_covid_not_start!=.
-count if drug==0&paxlovid_covid_stopped!=.
-count if drug==1&sotrovimab_covid_therapeutics==sotrovimab_covid_approved
-count if drug==1&sotrovimab_covid_therapeutics==sotrovimab_covid_complete
-count if drug==1&sotrovimab_covid_therapeutics==sotrovimab_covid_not_start
-count if drug==1&sotrovimab_covid_therapeutics==sotrovimab_covid_stopped
-count if drug==1&sotrovimab_covid_approved!=.
-count if drug==1&sotrovimab_covid_complete!=.
-count if drug==1&sotrovimab_covid_not_start!=.
-count if drug==1&sotrovimab_covid_stopped!=.
-
-
-*compare characteristics between those with detected high-risk group category and those without*
-by drug,sort: tab high_risk_group_new,m
-by drug,sort: sum age if high_risk_group_new==0,de
-by drug,sort: sum bmi if high_risk_group_new==0,de
-by drug,sort: sum d_postest_treat if high_risk_group_new==0,de
-by drug,sort: sum week_after_campaign if high_risk_group_new==0,de
-by drug,sort: sum week_after_vaccinate if high_risk_group_new==0,de
-by drug,sort: sum d_vaccinate_treat if high_risk_group_new==0,de
-
-tab drug sex if high_risk_group_new==0,row chi
-tab drug ethnicity if high_risk_group_new==0,row chi
-tab drug White if high_risk_group_new==0,row chi
-tab drug imd if high_risk_group_new==0,row chi
-tab drug rural_urban if high_risk_group_new==0,row chi
-tab drug region_nhs if high_risk_group_new==0,row chi
-tab drug region_covid_therapeutics if high_risk_group_new==0,row chi
-tab drug age_group3  if high_risk_group_new==0,row chi
-tab drug d_postest_treat_g2  if high_risk_group_new==0,row chi
-tab drug d_postest_treat  if high_risk_group_new==0,row
-tab drug downs_therapeutics  if high_risk_group_new==0,row
-tab drug solid_cancer_therapeutics  if high_risk_group_new==0,row
-tab drug haema_disease_therapeutics  if high_risk_group_new==0,row
-tab drug renal_therapeutics  if high_risk_group_new==0,row
-tab drug liver_therapeutics  if high_risk_group_new==0,row
-tab drug imid_therapeutics  if high_risk_group_new==0,row
-tab drug immunosup_therapeutics  if high_risk_group_new==0,row
-tab drug hiv_aids_therapeutics  if high_risk_group_new==0,row
-tab drug solid_organ_therapeutics  if high_risk_group_new==0,row
-tab drug rare_neuro_therapeutics  if high_risk_group_new==0,row
-tab drug autism_nhsd  if high_risk_group_new==0,row chi
-tab drug care_home_primis  if high_risk_group_new==0,row chi
-tab drug dementia_nhsd  if high_risk_group_new==0,row chi
-tab drug housebound_opensafely  if high_risk_group_new==0,row chi
-tab drug learning_disability_primis  if high_risk_group_new==0,row chi
-tab drug serious_mental_illness_nhsd  if high_risk_group_new==0,row chi
-tab drug bmi_group4  if high_risk_group_new==0,row chi
-tab drug bmi_g3  if high_risk_group_new==0,row chi
-tab drug diabetes  if high_risk_group_new==0,row chi
-tab drug chronic_cardiac_disease  if high_risk_group_new==0,row chi
-tab drug hypertension  if high_risk_group_new==0,row chi
-tab drug chronic_respiratory_disease  if high_risk_group_new==0,row chi
-tab drug vaccination_status  if high_risk_group_new==0,row chi
-tab drug month_after_vaccinate if high_risk_group_new==0,row chi
-tab drug drugs_consider_risk_contra if high_risk_group_new==0,row chi
-tab failure drug if high_risk_group_new==0,m col
-
-
-
-drop if high_risk_group_new==0
-*descriptives by drug groups*
-by drug,sort: sum age,de
-ttest age , by( drug )
-by drug,sort: sum bmi,de
-ttest bmi, by( drug )
-sum d_postest_treat ,de
-by drug,sort: sum d_postest_treat ,de
-ttest d_postest_treat , by( drug )
-ranksum d_postest_treat,by(drug)
-sum week_after_campaign,de
-by drug,sort: sum week_after_campaign,de
-ttest week_after_campaign , by( drug )
-ranksum week_after_campaign,by(drug)
-sum week_after_vaccinate,de
-by drug,sort: sum week_after_vaccinate,de
-ttest week_after_vaccinate , by( drug )
-ranksum week_after_vaccinate,by(drug)
-sum d_vaccinate_treat,de
-by drug,sort: sum d_vaccinate_treat,de
-ttest d_vaccinate_treat , by( drug )
-ranksum d_vaccinate_treat,by(drug)
-
-tab drug sex,row chi
-tab drug ethnicity,row chi
-tab drug White,row chi
-tab drug imd,row chi
-ranksum imd,by(drug)
-tab drug rural_urban,row chi
-ranksum rural_urban,by(drug)
-tab drug region_nhs,row chi
-tab drug region_covid_therapeutics,row chi
-*need to address the error of "too many values"*
-tab stp if drug==0
-tab stp if drug==1
-tab drug age_group3 ,row chi
-tab drug d_postest_treat_g2 ,row chi
-tab drug d_postest_treat ,row
-tab drug downs_syndrome ,row chi
-tab drug solid_cancer ,row chi
-tab drug solid_cancer_new ,row chi
-tab drug haema_disease ,row chi
-tab drug renal_disease ,row chi
-tab drug liver_disease ,row chi
-tab drug imid ,row chi
-tab drug immunosupression ,row chi
-tab drug immunosupression_new ,row chi
-tab drug hiv_aids ,row chi
-tab drug solid_organ ,row chi
-tab drug solid_organ_new ,row chi
-tab drug rare_neuro ,row chi
-tab drug high_risk_group ,row chi
-tab drug autism_nhsd ,row chi
-tab drug care_home_primis ,row chi
-tab drug dementia_nhsd ,row chi
-tab drug housebound_opensafely ,row chi
-tab drug learning_disability_primis ,row chi
-tab drug serious_mental_illness_nhsd ,row chi
-tab drug bmi_group4 ,row chi
-tab drug bmi_g3 ,row chi
-tab drug diabetes ,row chi
-tab drug chronic_cardiac_disease ,row chi
-tab drug hypertension ,row chi
-tab drug chronic_respiratory_disease ,row chi
-tab drug vaccination_status ,row chi
-tab drug month_after_vaccinate,row chi
-tab drug month_after_campaign,row chi
-tab drug sgtf ,row chi
-tab drug sgtf_new ,row chi
-tab drug pre_infection,row chi
-tab drug drugs_consider_risk_contra,row chi
-*tab drug variant_recorded ,row chi
-tab drug if covid_test_positive_pre_date!=.
-stset end_date ,  origin(start_date) failure(failure==1)
-stcox drug
-
-*recode Paxlovid as 1*
-replace drug=1-drug
-label define drug_Paxlovid2 0 "sotrovimab" 1 "Paxlovid"
-label values drug drug_Paxlovid2
-*gen splines*
-mkspline age_spline = age, cubic nknots(4)
-mkspline calendar_day_spline = day_after_campaign, cubic nknots(4)

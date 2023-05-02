@@ -782,6 +782,11 @@ study = StudyDefinition(
     on_or_after = "date_treated + 2 days", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
     return_expectations = {"date": {"earliest": "2022-02-16"},"rate": "uniform", "incidence": 0.1},
   ), 
+  hosp_discharge_date = patients.admitted_to_hospital(
+    returning = "date_discharged", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
+    on_or_after = "all_hosp_date", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
+    return_expectations = {"date": {"earliest": "2022-02-16"}, "rate": "uniform", "incidence": 0.1 },
+  ), 
   hosp_discharge_date0 = patients.admitted_to_hospital(
     returning = "date_discharged", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
     on_or_after = "all_hosp_date0", find_first_match_in_period = True, date_format = "YYYY-MM-DD",
