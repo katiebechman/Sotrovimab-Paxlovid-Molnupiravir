@@ -693,7 +693,7 @@ study = StudyDefinition(
     gender = patients.sex(return_expectations = {"rate": "universal", "category": {"ratios": {"M": 0.49, "F": 0.51}},}),
     preg_age = patients.age_as_of("preg_36wks_date", return_expectations = {"rate": "universal","int": {"distribution": "population_ages"}, "incidence" : 0.9 },),
   ),
-# Paxlovid exclusion
+  # Paxlovid exclusion
   # 3-5 CKD based on recorded creatinine value
   creatinine_ctv3 = patients.with_these_clinical_events(
     creatinine_codes_ctv3, find_last_match_in_period=True, on_or_before = "covid_test_positive_date", returning="numeric_value", include_date_of_match=True, date_format = "YYYY-MM-DD",
@@ -744,7 +744,7 @@ study = StudyDefinition(
     None: 0.10, "~": 0.05, "=": 0.65, ">=": 0.05, ">": 0.05, "<": 0.05, "<=": 0.05,}}, "incidence": 0.80,},
   ),  
    
-  ## OUTCOME 
+  ## OUTCOME  
   ## Time to outcome - coded in stata [28 days after +covid or 28day after Tx]
   ## 1) DRUG REACTIONS AND AESI (diarrhoea, diverticulitis, altered taste)
   ae_diverticulitis_icd=adverse_outcome_icd(diverticulitis_icd_codes),
@@ -759,9 +759,11 @@ study = StudyDefinition(
   ae_Psoriasis_snomed=imae_snomed(Psoriasis_ctv3),
   ae_Psoriatic_arthritis_snomed=imae_snomed(Psoriatic_arthritis_snomed),
   ae_Ankylosing_Spondylitis_ctv=imae_snomed(Ankylosing_Spondylitis_ctv3),  
-  ae_IBD_snomed=imae_snomed(IBD_ctv3),
-  
-## 2) ALL SAE INCLUDING COVID [Note need to consider patients admitted for MAB infusion]
+  ae_IBD_snomed=imae_snomed(IBD_ctv3),  
+  ae_anaphylaxis_icd=adverse_outcome_icd(anaphylaxis_icd_codes),
+  ae_anaphylaxis_snomed=adverse_outcome_snomed(anaphylaxis_snomed_codes),
+
+  ## 2) ALL SAE INCLUDING COVID [Note need to consider patients admitted for MAB infusion]
   all_hosp_date = patients.admitted_to_hospital(
     returning = "date_admitted", with_patient_classification = ["1"], with_admission_method=["21", "22", "23", "24", "25", "2A", "2B", "2C", "2D", "28"], 
     between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"], find_first_match_in_period = True, date_format = "YYYY-MM-DD",
@@ -878,6 +880,5 @@ study = StudyDefinition(
   # # hospitalisation_primary_code1 = patients.admitted_to_hospital(returning = "primary_diagnosis", with_patient_classification = ["1"], between = ["date_treated", "date_treated"], find_first_match_in_period = True,),
   # # hospitalisation_primary_code2 = patients.admitted_to_hospital(returning = "primary_diagnosis", with_patient_classification = ["1"], on_or_after = "start_date + 2 days", find_first_match_in_period = True,),
   # # death_code = patients.died_from_any_cause(returning = "underlying_cause_of_death", between = ["covid_test_positive_date", "covid_test_positive_date + 28 day"]),
-
   
 )

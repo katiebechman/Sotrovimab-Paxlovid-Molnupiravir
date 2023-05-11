@@ -1,7 +1,7 @@
 version: '3.0'
 
 expectations:
-  population_size: 500000
+  population_size: 50000
 
 actions:
 
@@ -11,96 +11,68 @@ actions:
       highly_sensitive:
         cohort: output/input.csv
 
-  data_preparation:
-    run: stata-mp:latest analysis/data_preparation_and_descriptives.do
+
+  define_covariates:
+    run: stata-mp:latest analysis/000_define_covariates.do
     needs: [generate_study_population]
     outputs:
       moderately_sensitive:
-        log: logs/data_preparation.log
+        log: logs/cleaning_dataset.log 
       highly_sensitive:
         data: output/main.dta
-        data2: output/sensitivity.dta
 
-  cox_regression:
-    run: stata-mp:latest analysis/cox.do
-    needs: [data_preparation]
+  baseline_characteristic:
+    run: stata-mp:latest analysis/100_baseline_characteristics.do
+    needs: [define_covariates]
     outputs:
       moderately_sensitive:
-        log: logs/cox.log
-        figure1: output/phtest.svg  
-        figure2: output/phtest_psw.svg
-        figure3: output/psgraph.svg 
+        log: logs/baseline_characterisitcs.log 
 
-  multiple_imputation:
-    run: stata-mp:latest analysis/multiple_imputation.do
-    needs: [data_preparation]
+
+  cox_model:
+    run: stata-mp:latest analysis/200_cox_model.do
+    needs: [define_covariates]
     outputs:
       moderately_sensitive:
-        log: logs/MI.log
+        log: logs/cox_models.log 
+        data: output/tables/cox_model_summary.dta
+        survrisk_ae_diverticulitis_snomed: output/figures/survrisk_ae_diverticulitis_snomed.svg
+        survrisk_new_ae_ra_snomed: output/figures/survrisk_new_ae_ra_snomed.svg        
+        survrisk_ae_anaphylaxis_icd: output/figures/survrisk_ae_anaphylaxis_icd.svg
+        survrisk_ae_all: output/figures/survrisk_ae_all.svg
+        survrisk_covid_hosp: output/figures/survrisk_covid_hosp.svg        
+        survrisk_all_hosp: output/figures/survrisk_all_hosp.svg
+        survrisk_died: output/figures/survrisk_died.svg        
+        survhaz_ae_diverticulitis_snomed: output/figures/survhaz_ae_diverticulitis_snomed.svg
+        survhaz_new_ae_ra_snomed: output/figures/survhaz_new_ae_ra_snomed.svg
+        survhaz_ae_anaphylaxis_icd: output/figures/survhaz_ae_anaphylaxis_icd.svg
+        survhaz_ae_all: output/figures/survhaz_ae_all.svg
+        survhaz_covid_hosp: output/figures/survhaz_covid_hosp.svg
+        survhaz_all_hosp: output/figures/survhaz_all_hosp.svg
+        survhaz_died: output/figures/survhaz_died.svg       
+        survcur_ae_diverticulitis_snomed: output/figures/survcur_ae_diverticulitis_snomed.svg
+        survcur_new_ae_ra_snomed: output/figures/survcur_new_ae_ra_snomed.svg
+        survcur_ae_anaphylaxis_icd: output/figures/survcur_ae_anaphylaxis_icd.svg
+        survcur_ae_all: output/figures/survcur_ae_all.svg
+        survcur_covid_hosp: output/figures/survcur_covid_hosp.svg
+        survcur_all_hosp: output/figures/survcur_all_hosp.svg
+        survcur_died: output/figures/survcur_died.svg
 
-
-  data_preparation_molnupiravir:
-    run: stata-mp:latest analysis/data_preparation_and_descriptives_molnupiravir.do
-    needs: [generate_study_population]
+  PS_model:
+    run: stata-mp:latest analysis/300_ps_model.do
+    needs: [define_covariates]
     outputs:
       moderately_sensitive:
-        log: logs/data_preparation_mol.log
-      highly_sensitive:
-        data: output/main_mol.dta
-
-  cox_regression_molnupiravir:
-    run: stata-mp:latest analysis/cox_molnupiravir.do
-    needs: [data_preparation_molnupiravir]
-    outputs:
-      moderately_sensitive:
-        log: logs/cox_mol.log
-
-
-  generate_study_population_update:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_update
-    outputs:
-      highly_sensitive:
-        cohort: output/input_update.csv
-
-  data_preparation_update:
-    run: stata-mp:latest analysis/data_preparation_and_descriptives_update.do
-    needs: [generate_study_population_update]
-    outputs:
-      moderately_sensitive:
-        log: logs/data_preparation_update.log
-      highly_sensitive:
-        data: output/main_update.dta
-        data2: output/sensitivity_update.dta
-
-  cox_regression_update:
-    run: stata-mp:latest analysis/cox_update.do
-    needs: [data_preparation_update]
-    outputs:
-      moderately_sensitive:
-        log: logs/cox_update.log
-        figure1: output/phtest_update.svg  
-        figure2: output/phtest_psw_update.svg
-        figure3: output/psgraph_update.svg 
-
-  multiple_imputation_update:
-    run: stata-mp:latest analysis/multiple_imputation_update.do
-    needs: [data_preparation_update]
-    outputs:
-      moderately_sensitive:
-        log: logs/MI_update.log
-
-  data_preparation_molnupiravir_update:
-    run: stata-mp:latest analysis/data_preparation_and_descriptives_molnupiravir_update.do
-    needs: [generate_study_population_update]
-    outputs:
-      moderately_sensitive:
-        log: logs/data_preparation_mol_update.log
-      highly_sensitive:
-        data: output/main_mol_update.dta
-
-  cox_regression_molnupiravir_update:
-    run: stata-mp:latest analysis/cox_molnupiravir_update.do
-    needs: [data_preparation_molnupiravir_update]
-    outputs:
-      moderately_sensitive:
-        log: logs/cox_mol_update.log
+        log: logs/ps_model.log
+        data: output/tables/cox_model_propensity.dta
+        hist_ae_diverticulitis_snomed: output/figures/hist_ae_diverticulitis_snomed.svg
+        hist_new_ae_ra_snomed: output/figures/histogramsp_new_ae_ra_snomed.svg
+        hist_ae_anaphylaxis_icd: output/figures/histogramsp_ae_anaphylaxis_icd.svg
+        hist_ae_all: output/figures/histogramsp_ae_all.svg
+        hist_covid_hosp: output/figures/histogramsp_covid_hosp.svg
+        hist_all_hosp: output/figures/histogramsp_all_hosp.svg
+        hist_died: output/figures/histogramsp_died.svg
+        match_agesex: output/figures/match_agesex.svg
+        match_adj: output/figures/match_adj.svg
+        match_fulladj1: output/figures/match_fulladj1.svg
+        match_fulladj2: output/figures/match_fulladj2.svg  

@@ -474,5 +474,9 @@ taste_snomed_codes = codelist_from_csv(
 taste_icd_codes = codelist_from_csv( 
   "codelists/user-katiebechman-abnormal-taste-icd10.csv", system = "icd10",  column = "code",
 )
-
-### AESIs
+anaphylaxis_snomed_codes = codelist_from_csv( 
+  "codelists/user-katiebechman-anaphylaxis-snomed.csv", system = "snomed",  column = "code",
+)
+anaphylaxis_icd_codes = codelist_from_csv( 
+  "codelists/user-katiebechman-anaphylaxis.csv", system = "icd10",  column = "code",
+) 

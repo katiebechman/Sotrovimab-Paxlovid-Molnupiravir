@@ -22,7 +22,7 @@ global logdir "$projectdir/logs"
 di "$logdir"
 * Open a log file
 cap log close
-log using "$logdir/cleaning_dataset.log", replace
+log using "$logdir/baseline_characterisitcs.log", replace
 
 *Set Ado file path
 adopath + "$projectdir/analysis/extra_ados"
@@ -68,6 +68,7 @@ table1_mc, by(drug) total(before) onecol iqrmiddle(",")  ///
 			drugs_consider_risk_contra bin %5.1f \ ///
 			paxlovid_contra bin %5.1f)
 
+
 *check treatment status*
 count if drug==1&sotrovimab==sotrovimab_not_start
 count if drug==1&sotrovimab==sotrovimab_stopped
@@ -76,8 +77,6 @@ count if drug==2&paxlovid==paxlovid_stopped
 count if drug==3&molnupiravir==molnupiravir_not_start
 count if drug==3&molnupiravir==molnupiravir_stopped
 
-*gen splines*
-//mkspline age_spline = age, cubic nknots(4)
 
 log close
 

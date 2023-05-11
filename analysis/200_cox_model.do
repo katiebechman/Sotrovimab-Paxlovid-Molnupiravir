@@ -22,7 +22,7 @@ global logdir "$projectdir/logs"
 di "$logdir"
 * Open a log file
 cap log close
-log using "$logdir/cleaning_dataset.log", replace
+log using "$logdir/cox_model.log", replace
 
 *Set Ado file path
 adopath + "$projectdir/analysis/extra_ados"
@@ -48,12 +48,11 @@ global fulladj2 i.drug age i.sex i.region_nhs drugs_consider_risk_contra ///
 				vaccination_status imd White 1b.bmi_group diabetes chronic_cardiac_disease chronic_respiratory_disease hypertension
 /* Alternative models
 1. age = age Vs 5y band V spline			
-2. missing values as a seperate category for ethnicity, IMD, BMI 
-global fulladj_miss 	i.drug age i.sex i.region_nhs drugs_consider_risk_contra ///
-						downs_syndrome solid_cancer haem_disease renal_disease liver_disease imid_on_drug immunosupression hiv_aids solid_organ rare_neuro  ///
-						vaccination_status imd_with_missing White_with_missing 1b.bmi_group_with_missing diabetes chronic_cardiac_disease chronic_respiratory_disease hypertension
-3. Strata via NHS region
-stcox i.drug age i.sex, strata(region_nhs)
+2. missing values as a seperate category for ethnicity, IMD, BMI: global fulladj_miss 	i.drug age i.sex i.region_nhs drugs_consider_risk_contra downs_syndrome ///
+																						solid_cancer haem_disease renal_disease liver_disease imid_on_drug immunosupression ///
+																						hiv_aids solid_organ rare_neuro  vaccination_status imd_with_missing White_with_missing ///
+																						1b.bmi_group_with_missing diabetes chronic_cardiac_disease chronic_respiratory_disease hypertension
+3. Strata via NHS region: stcox i.drug age i.sex, strata(region_nhs)
 */
 	   
 tempname coxoutput
@@ -66,7 +65,7 @@ postfile `coxoutput' str20(model) str20(failure) ///
 	hr_sot lc_sot uc_sot hr_pax lc_pax uc_pax hr_mol lc_mol uc_mol ///
 	using "$projectdir/output/tables/cox_model_summary", replace	
 						
-foreach fail in ae_diverticulitis_snomed new_ae_ra_snomed ae_all covid_hosp all_hosp died {
+foreach fail in ae_diverticulitis_snomed new_ae_ra_snomed ae_anaphylaxis_icd ae_all covid_hosp all_hosp died {
 
 	stset stop_`fail', id(patient_id) origin(time start_date) enter(time start_date) failure(fail_`fail'==1) 
 						
@@ -140,14 +139,6 @@ foreach fail in ae_diverticulitis_snomed new_ae_ra_snomed ae_all covid_hosp all_
 
 			graph export "$projectdir/output/figures/survrisk_`fail'.svg", as(svg) replace
 			
-			stcurve, haz kernel(epan2) at1(drug=0) at2(drug=1) at3(drug=2) at4(drug=3) ///
-			title("") range(0 28) xtitle("Analysis time (years)") ///
-			legend(order(1 "Control" 2 "Sotrovimab" 3 "Paxlovid" 4 "Molnupiravir") symxsize(*0.4) size(small)) ///
-			ylabel(,angle(horizontal)) plotregion(color(white)) graphregion(color(white)) ///
-			ytitle("Survival Probability" ) xtitle("Time (Days)") saving("$projectdir/output/figures/survhaz_`fail'", replace)
-				
-			graph export "$projectdir/output/figures/survhaz_`fail'.svg", as(svg) replace
-			
 			stcurve, survival at1(drug=0) at2(drug=1) at3(drug=2) at4(drug=3) title("") ///
 			range(0 28) xtitle("Analysis time (years)") ///
 			legend(order(1 "Control" 2 "Sotrovimab" 3 "Paxlovid" 4 "Molnupiravir") symxsize(*0.4) size(small)) ///
@@ -157,9 +148,30 @@ foreach fail in ae_diverticulitis_snomed new_ae_ra_snomed ae_all covid_hosp all_
 			graph export "$projectdir/output/figures/survcurve_`fail'.svg", as(svg) replace
 }
 
-	   
-	   
-	   
+
+
+
+foreach fail in ae_all {
+
+	stset stop_`fail', id(patient_id) origin(time start_date) enter(time start_date) failure(fail_`fail'==1) 
+			stcox i.drug 	
+			stcurve, haz kernel(epan2) at1(drug=0) at2(drug=1) at3(drug=2) at4(drug=3) ///
+			title("") range(0 28) xtitle("Analysis time (years)") ///
+			legend(order(1 "Control" 2 "Sotrovimab" 3 "Paxlovid" 4 "Molnupiravir") symxsize(*0.4) size(small)) ///
+			ylabel(,angle(horizontal)) plotregion(color(white)) graphregion(color(white)) ///
+			ytitle("Survival Probability" ) xtitle("Time (Days)") saving("$projectdir/output/figures/survhaz_`fail'", replace)
+				
+			graph export "$projectdir/output/figures/survhaz_`fail'.svg", as(svg) replace
+			
+}
+
+// d/w Sam - left and right boundary regions overlap; specify a smaller bandwidth in width() -> due to no events. Unsure which width to use
+
+log close
+			
+			
+log close
+// ask best format to export figures
 	   
 	   
 	   

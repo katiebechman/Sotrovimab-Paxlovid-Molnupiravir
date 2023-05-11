@@ -71,6 +71,8 @@ foreach var of varlist 	 covid_test_positive_date				///
 					     ae_diarrhoea_snomed					///
 						 ae_taste_snomed						///
 						 ae_taste_icd							///
+						 ae_anaphylaxis_icd						///
+  						 ae_anaphylaxis_snomed					///
 						 ae_rheumatoid_arthritis_snomed			///
 						 ae_rheumatoid_arthritis_icd			///
 						 ae_sle_ctv								///
@@ -188,21 +190,23 @@ gen new_ae_psoriasis_snomed = ae_psoriasis_snomed if psoriasis_nhsd==0
 gen new_ae_psa_snomed = ae_psoriatic_arthritis_snomed if psoriatic_arthritis_nhsd==0
 gen new_ae_ankspon_ctv = ae_ankylosing_spondylitis_ctv if ankylosing_spondylitis_nhsd==0
 gen new_ae_ibd_snomed = ae_ibd_snomed if ibd_ctv==0
-global ae_spc		ae_diverticulitis_snomed		///
-					ae_diarrhoea_snomed				///
-					ae_taste_snomed						
-global ae_spc_icd	ae_diverticulitis_icd			///
-					ae_taste_icd					
-global ae_imae		new_ae_ra_snomed 				///
-					new_ae_sle_ctv 					///
-					new_ae_psoriasis_snomed 		///
-					new_ae_psa_snomed 				///
-					new_ae_ankspon_ctv				///
-					new_ae_ibd	
-global ae_imae_icd	new_ae_ra_icd 					///
-					new_ae_sle_icd							
+global ae_spc			ae_diverticulitis_snomed		///
+						ae_diarrhoea_snomed				///
+						ae_taste_snomed						
+global ae_spc_icd		ae_diverticulitis_icd			///
+						ae_taste_icd					
+global ae_drug 			ae_anaphylaxis_snomed			
+global ae_drug_icd		ae_anaphylaxis_icd
+global ae_imae			new_ae_ra_snomed 				///
+						new_ae_sle_ctv 					///
+						new_ae_psoriasis_snomed 		///
+						new_ae_psa_snomed 				///
+						new_ae_ankspon_ctv				///
+						new_ae_ibd	
+global ae_imae_icd		new_ae_ra_icd 					///
+						new_ae_sle_icd							
 *remove event if occurred before start (including new start date for control)
-foreach x in $ae_spc $ae_spc_icd $ae_imae $ae_imae_icd{
+foreach x in $ae_spc $ae_spc_icd $ae_drug $ae_drug_icd $ae_imae $ae_imae_icd{
 				display "`x'"
 				bys drug: count if (`x' < start_date | `x' > start_date + 28) & `x'!=.
 				replace `x'=. if (`x' < start_date | `x' > start_date + 28) & `x'!=.
@@ -210,14 +214,19 @@ foreach x in $ae_spc $ae_spc_icd $ae_imae $ae_imae_icd{
 egen ae_spc_gp = rmin($ae_spc)
 egen ae_spc_serious = rmin($ae_spc_icd)
 egen ae_spc_all = rmin($ae_spc $ae_spc_icd)
+egen ae_drug_gp = rmin($ae_drug)
+egen ae_drug_serious = rmin($ae_drug_icd)
+egen ae_drug_all = rmin($ae_drug $ae_drug_icd)
 egen ae_imae_gp = rmin($ae_imae)	
 egen ae_imae_serious = rmin($ae_imae_icd)
 egen ae_imae_all = rmin($ae_imae $ae_imae_icd)	
-egen ae_all = rmin($ae_spc $ae_spc_icd $ae_imae $ae_imae_icd)
-egen ae_all_serious = rmin($ae_spc_icd $ae_imae_icd)
+egen ae_all = rmin($ae_spc $ae_spc_icd $ae_drug $ae_drug_icd $ae_imae $ae_imae_icd)
+egen ae_all_serious = rmin($ae_spc_icd $ae_drug_icd $ae_imae_icd)
 by drug, sort: count if ae_spc_all!=.
+by drug, sort: count if ae_drug_all!=.
+by drug, sort: count if ae_imae_all!=.
 by drug, sort: count if ae_all!=.
-by drug, sort: count if ae_all_serious!=.
+
 
 *** Secondary outcome - SAEs hospitalisation or death including COVID-19 
 *correcting COVID hosp events: admitted on day 0 or day 1 after treatment - to ignore sotro initiators with mab procedure codes*
@@ -523,8 +532,8 @@ rename died_date_ons died
 
 * Generate failure 
 foreach var of varlist ae_spc* ae_imae* ae_all* ae_diverticulitis_snomed ae_diarrhoea_snomed ae_taste_snomed ae_diverticulitis_icd ///
-					   ae_taste_icd new_ae_ra_snomed new_ae_sle_ctv new_ae_psoriasis_snomed new_ae_psa_snomed new_ae_ankspon_ctv ///
-					   new_ae_ibd new_ae_ra_icd new_ae_sle_icd covid_hosp all_hosp died{
+					   ae_taste_icd ae_anaphylaxis_icd ae_anaphylaxis_snomed new_ae_ra_snomed new_ae_sle_ctv new_ae_psoriasis_snomed ///
+					   new_ae_psa_snomed new_ae_ankspon_ctv new_ae_ibd new_ae_ra_icd new_ae_sle_icd covid_hosp all_hosp died{
 	display "`var'"
 	by drug, sort: count if `var'!=.
 	by drug, sort: count if `var'<start_date & `var' 
@@ -537,15 +546,15 @@ foreach var of varlist ae_spc* ae_imae* ae_all* ae_diverticulitis_snomed ae_diar
 }
 * Add half-day buffer if outcome on indexdate
 foreach var of varlist ae_spc* ae_imae* ae_all* ae_diverticulitis_snomed ae_diarrhoea_snomed ae_taste_snomed ae_diverticulitis_icd ///
-					   ae_taste_icd new_ae_ra_snomed new_ae_sle_ctv new_ae_psoriasis_snomed new_ae_psa_snomed new_ae_ankspon_ctv ///
-					   new_ae_ibd new_ae_ra_icd new_ae_sle_icd covid_hosp all_hosp died{	
+					   ae_taste_icd ae_anaphylaxis_icd ae_anaphylaxis_snomed new_ae_ra_snomed new_ae_sle_ctv new_ae_psoriasis_snomed ///
+					   new_ae_psa_snomed new_ae_ankspon_ctv new_ae_ibd new_ae_ra_icd new_ae_sle_icd covid_hosp all_hosp died{
 	display "`var'"
 	replace `var'=`var'+0.5 if `var'==start_date
 }
 *Generate censor date
 foreach var of varlist ae_spc* ae_imae* ae_all* ae_diverticulitis_snomed ae_diarrhoea_snomed ae_taste_snomed ae_diverticulitis_icd ///
-					   ae_taste_icd new_ae_ra_snomed new_ae_sle_ctv new_ae_psoriasis_snomed new_ae_psa_snomed new_ae_ankspon_ctv ///
-					   new_ae_ibd new_ae_ra_icd new_ae_sle_icd covid_hosp all_hosp died{	
+					   ae_taste_icd ae_anaphylaxis_icd ae_anaphylaxis_snomed new_ae_ra_snomed new_ae_sle_ctv new_ae_psoriasis_snomed ///
+					   new_ae_psa_snomed new_ae_ankspon_ctv new_ae_ibd new_ae_ra_icd new_ae_sle_icd covid_hosp all_hosp died{
 	gen stop_`var'=`var' if fail_`var'==1
 	replace stop_`var'=min(death_date,dereg_date,study_end_date,start_date_29,paxlovid_d,molnupiravir_d,remdesivir_d,casirivimab_d) if fail_`var'==0&drug==1
 	replace stop_`var'=min(death_date,dereg_date,study_end_date,start_date_29,sotrovimab_d,remdesivir_d,casirivimab_d) if fail_`var'==0&drug==2
